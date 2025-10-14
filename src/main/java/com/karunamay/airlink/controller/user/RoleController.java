@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/admin/role")
 @RequiredArgsConstructor
-@Tag(name = "Role Management (Admin)",
+@Tag(name = "Role",
         description = "CRUD operations for managing user roles and permissions. Requires elevated privileges.")
 @SecurityRequirement(name = "bearerAuth")
 public class RoleController {

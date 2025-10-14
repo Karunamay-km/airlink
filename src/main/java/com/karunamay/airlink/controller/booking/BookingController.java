@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/booking")
-@Tag(name = "Booking Management", description = "Operations for creating, retrieving, and managing flight bookings.")
+@Tag(name = "Booking", description = "Operations for creating, retrieving, and managing flight bookings.")
 public class BookingController {
 
     private final BookingService bookingService;

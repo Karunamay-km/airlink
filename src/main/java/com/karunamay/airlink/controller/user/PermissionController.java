@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/permission")
-@Tag(name = "Permission Management (Admin)", description = "CRUD operations for managing application permissions. Requires admin/elevated privileges.")
+@Tag(name = "Permission", description = "CRUD operations for managing application permissions. Requires admin/elevated privileges.")
 @SecurityRequirement(name = "bearerAuth")
 public class PermissionController {
 

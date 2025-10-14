@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/aircraft")
-@Tag(name = "Aircraft Management (Admin)", description = "Operations related to managing aircraft entities (CRUD and lookup).")
+@Tag(name = "Aircraft", description = "Operations related to managing aircraft entities (CRUD and lookup).")
 public class AircraftController {
 
     private final AircraftService aircraftService;
