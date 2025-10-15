@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  airlink:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airlink:0.0.1
+    networks:
+      - airlink_internal
+    ports:
+      - 8080:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    environment:
+      DB_URL: jdbc:postgresql://host.docker.internal:5432/airlink
+
+    secrets:
+      - private_key
+      - public_key
+
+networks:
+  airlink_internal:
+    name: airlink
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
+
+secrets:
+  private_key:
+    file: ./secret/private.pem
+  public_key:
+    file: ./secret/public.pem

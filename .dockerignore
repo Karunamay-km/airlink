@@ -1,0 +1,45 @@
+# Maven build output
+**/target/
+**/build/
+
+# IDE and editor files
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+*.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+logs/
+*.out
+*.tmp
+
+# Local environment/config
+.env
+.prod.env
+*.local
+secret/
+credentials/
+
+# Node/npm
+**/node_modules/
+
+# Temporary files
+*.swp
+*.bak
+*.lock
+*.orig
+
+# Eclipse/IDE workspace settings
+.settings/
+.project
