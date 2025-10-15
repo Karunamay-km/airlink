@@ -59,7 +59,7 @@ public class OpenApiConfig {
                 // Servers
                 .servers(Arrays.asList(
                         new Server()
-                                .url("http://localhost:8080/api")
+                                .url("http://127.0.0.1:8080/api")
                                 .description("Local Development Server"),
                         new Server()
                                 .url("https://api-dev.yourcompany.com")

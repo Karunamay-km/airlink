@@ -40,11 +40,11 @@ public class WebSecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${app.cors.fronEndClient}")
-    private final String frontendClient;
+    @Value("${app.cors.frontEndClient}")
+    private String frontendClient;
 
     @Value("${app.cors.swaggerClient}")
-    private final String swaggerClient;
+    private String swaggerClient;
 
 
     @Bean

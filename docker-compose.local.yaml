@@ -18,8 +18,8 @@ services:
       DB_URL: jdbc:postgresql://host.docker.internal:5432/airlink
 
     secrets:
-      - private_key
-      - public_key
+      - private_key.pem
+      - public_key.pem
 
 networks:
   airlink_internal:
@@ -31,7 +31,7 @@ networks:
           gateway: 172.18.0.1
 
 secrets:
-  private_key:
+  private_key.pem:
     file: ./secret/private.pem
-  public_key:
+  public_key.pem:
     file: ./secret/public.pem
