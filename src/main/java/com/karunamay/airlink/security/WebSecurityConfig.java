@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,6 +40,13 @@ public class WebSecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Value("${app.cors.fronEndClient}")
+    private final String frontendClient;
+
+    @Value("${app.cors.swaggerClient}")
+    private final String swaggerClient;
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,11 +69,8 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of(
-                        "http://localhost:3000",
-                        "http://127.0.0.1:5173", // React client application (local)
-                        "http://localhost:5173"// React client application (local)
-                ));
+                List.of(frontendClient, swaggerClient)
+        );
         configuration.setAllowedMethods(List.of("GET", "PUT", "PATCH", "DELETE", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
