@@ -28,7 +28,7 @@ logs/
 .env
 .prod.env
 *.local
-secret/
+secrets/
 credentials/
 
 # Node/npm

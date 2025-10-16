@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: airlink:0.0.1
+    image: karunamay4055/airlink:0.0.1
     networks:
       - airlink_internal
     ports:
@@ -13,10 +13,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
-      - .env
+      - .prod.env
     environment:
-      DB_URL: jdbc:postgresql://host.docker.internal:5432/airlink
-
+      PRIVATE_KEY_SYSTEM_PATH: /run/secrets/private_key.pem
+      PUBLIC_KEY_SYSTEM_PATH: /run/secrets/public_key.pem
     secrets:
       - private_key.pem
       - public_key.pem
@@ -32,6 +32,6 @@ networks:
 
 secrets:
   private_key.pem:
-    file: ./secrets/private.pem
+    file: /etc/secrets/private_key.pem
   public_key.pem:
-    file: ./secrets/public.pem
+    file: /etc/secrets/public_key.pem

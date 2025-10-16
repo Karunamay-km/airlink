@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: airlink:0.0.1
+    image: karunamay4055/airlink:0.0.1
     networks:
       - airlink_internal
     ports:
@@ -15,8 +15,8 @@ services:
     env_file:
       - .prod.env
     secrets:
-      - private_key
-      - public_key
+      - private_key.pem
+      - public_key.pem
 
 networks:
   airlink_internal:
@@ -28,7 +28,7 @@ networks:
           gateway: 172.18.0.1
 
 secrets:
-  private_key:
-    file: ./secret/private.pem
-  public_key:
-    file: ./secret/public.pem
+  private_key.pem:
+    file: /etc/secrets/private_key.pem
+  public_key.pem:
+    file: /etc/secrets/public_key.pem
