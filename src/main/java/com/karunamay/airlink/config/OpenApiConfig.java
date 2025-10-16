@@ -48,13 +48,11 @@ public class OpenApiConfig {
                                 "3. Click **Authorize** button and enter: `Bearer {your-token}`\n" +
                                 "4. Try protected endpoints")
                         .contact(new Contact()
-                                .name("Your Company")
-                                .email("support@yourcompany.com")
-                                .url("https://yourcompany.com"))
+                                .name("Karunamay Murmu")
+                                .email("Karunamaymurmu@gmail.com"))
                         .license(new License()
                                 .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0.html"))
-                        .termsOfService("https://yourcompany.com/terms"))
+                                .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
 
                 // Servers
                 .servers(Arrays.asList(
@@ -62,10 +60,10 @@ public class OpenApiConfig {
                                 .url("http://127.0.0.1:8080/api")
                                 .description("Local Development Server"),
                         new Server()
-                                .url("https://api-dev.yourcompany.com")
+                                .url("https://airlink-0-0-1.onrender.com/")
                                 .description("Development Server"),
                         new Server()
-                                .url("https://api.yourcompany.com")
+                                .url("https://airlink-0-0-1.onrender.com/")
                                 .description("Production Server")
                 ))
 
