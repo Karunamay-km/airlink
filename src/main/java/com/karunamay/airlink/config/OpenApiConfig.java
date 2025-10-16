@@ -8,13 +8,11 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -27,6 +25,9 @@ public class OpenApiConfig {
 
     @Value("${app.description}")
     private String appDescription;
+
+    @Value("${app.cors.serverUrl}")
+    private String serverUrl;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -57,13 +58,10 @@ public class OpenApiConfig {
                 // Servers
                 .servers(Arrays.asList(
                         new Server()
-                                .url("http://127.0.0.1:8080/api")
+                                .url(serverUrl)
                                 .description("Local Development Server"),
                         new Server()
-                                .url("https://airlink-0-0-1.onrender.com/")
-                                .description("Development Server"),
-                        new Server()
-                                .url("https://airlink-0-0-1.onrender.com/")
+                                .url(serverUrl)
                                 .description("Production Server")
                 ))
 
