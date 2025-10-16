@@ -46,6 +46,8 @@ public class WebSecurityConfig {
     @Value("${app.cors.swaggerClient}")
     private String swaggerClient;
 
+    @Value("${app.cors.serverUrl}")
+    private String serverUrl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,7 +71,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of(frontendClient, swaggerClient)
+                List.of(frontendClient, swaggerClient, serverUrl)
         );
         configuration.setAllowedMethods(List.of("GET", "PUT", "PATCH", "DELETE", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
@@ -141,25 +143,4 @@ public class WebSecurityConfig {
                         }));
         return http.build();
     }
-
-//    @Bean
-//    public OpenAPI apiInfo() {
-//        return new OpenAPI()
-//                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-//                .components(new Components()
-//                        .addSecuritySchemes("bearerAuth",
-//                                new SecurityScheme()
-//                                        .name("bearerAuth")
-//                                        .type(SecurityScheme.Type.HTTP)
-//                                        .scheme("bearer")
-//                                        .bearerFormat("JWT")
-//                        )
-//                )
-//                .info(new Info()
-//                        .title("Airlink API")
-//                        .description("REST API documentation for Airlink system")
-//                        .version("1.0.0"));
-//    }
-
-
 }
