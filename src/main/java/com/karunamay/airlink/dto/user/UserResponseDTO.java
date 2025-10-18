@@ -2,15 +2,13 @@ package com.karunamay.airlink.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
@@ -26,6 +24,7 @@ public class UserResponseDTO {
     private String lastName;
     private String phone;
     private LocalDate dob;
+
     private Boolean enabled;
     private Boolean emailVerified;
 
@@ -40,9 +39,4 @@ public class UserResponseDTO {
 
     private Set<String> roles;
     private Set<String> permissions;
-
-
 }
-
-
-

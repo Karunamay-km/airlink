@@ -41,14 +41,14 @@ public class AirportServiceImpl implements AirportService {
         Airport savedAirport = airportRepository.save(airport);
 
         log.info("Airport created successfully with id: {}", savedAirport.getId());
-        return airportMapper.toResponseDTO(savedAirport);
+        return airportMapper.toBasicResponseDTO(savedAirport);
     }
 
     @Override
     @Transactional(readOnly = true)
     public AirportResponseDTO getAirportById(Long id) {
         log.info("Fetching airport by id {}", id);
-        return airportMapper.toResponseDTO(baseService.findByIdOrThrow(id, airportRepository));
+        return airportMapper.toBasicResponseDTO(baseService.findByIdOrThrow(id, airportRepository));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AirportServiceImpl implements AirportService {
         log.info("Fetching airport by name: {}", name);
         Airport airport = airportRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Airport with name " + name + " not found."));
-        return airportMapper.toResponseDTO(airport);
+        return airportMapper.toBasicResponseDTO(airport);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class AirportServiceImpl implements AirportService {
         log.info("Fetching airport by code: {}", code);
         Airport airport = airportRepository.findByCodeIgnoreCase(code)
                 .orElseThrow(() -> new ResourceNotFoundException("Airport with code " + code + " not found."));
-        return airportMapper.toResponseDTO(airport);
+        return airportMapper.toBasicResponseDTO(airport);
     }
 
 
@@ -76,7 +76,7 @@ public class AirportServiceImpl implements AirportService {
         log.info("Fetching airports by city: {}", city);
         return airportRepository.findByCityIgnoreCase(city)
                 .stream()
-                .map(airportMapper::toResponseDTO)
+                .map(airportMapper::toBasicResponseDTO)
                 .toList();
     }
 
@@ -86,7 +86,7 @@ public class AirportServiceImpl implements AirportService {
         log.debug("Fetching all active airports.");
         return airportRepository.findByActiveTrue()
                 .stream()
-                .map(airportMapper::toResponseDTO)
+                .map(airportMapper::toBasicResponseDTO)
                 .toList();
     }
 
@@ -96,7 +96,7 @@ public class AirportServiceImpl implements AirportService {
         log.debug("Fetching all airports.");
         return airportRepository.findAll()
                 .stream()
-                .map(airportMapper::toResponseDTO)
+                .map(airportMapper::toBasicResponseDTO)
                 .toList();
     }
 
@@ -125,7 +125,7 @@ public class AirportServiceImpl implements AirportService {
 
         log.info("Airport updated successfully id {}", updatedAirport.getId());
 
-        return airportMapper.toResponseDTO(updatedAirport);
+        return airportMapper.toBasicResponseDTO(updatedAirport);
     }
 
 

@@ -26,8 +26,8 @@ public class OpenApiConfig {
     @Value("${app.description}")
     private String appDescription;
 
-    @Value("${app.cors.serverUrl}")
-    private String serverUrl;
+    @Value("${app.cors.swaggerServerUrl}")
+    private String swaggerServerUrl;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -58,10 +58,10 @@ public class OpenApiConfig {
                 // Servers
                 .servers(Arrays.asList(
                         new Server()
-                                .url(serverUrl)
+                                .url(swaggerServerUrl)
                                 .description("Local Development Server"),
                         new Server()
-                                .url(serverUrl)
+                                .url(swaggerServerUrl)
                                 .description("Production Server")
                 ))
 

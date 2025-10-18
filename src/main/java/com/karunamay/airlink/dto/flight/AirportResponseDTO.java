@@ -23,8 +23,6 @@ public class AirportResponseDTO {
     private String city;
     private String country;
     private Boolean active;
-    private Set<FlightResponseDTO> arrivingFlights;
-    private Set<FlightResponseDTO> departingFlights;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;

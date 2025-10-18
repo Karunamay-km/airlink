@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,20 +39,20 @@ public class PermissionController {
     @Operation(
             summary = "Create a new permission",
             description = "Defines a new permission (e.g., 'user:create'). Requires a unique name.",
-            tags = {"Permission Management (Admin)"}
+            tags = {"Permission(create)"}
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "201",
                     description = "Permission created successfully",
                     content = @Content(schema = @Schema(implementation = PermissionResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input or validation error",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "409",
                     description = "Conflict - Permission name already exists",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
@@ -73,12 +74,12 @@ public class PermissionController {
             tags = {"Permission Management (Admin)"}
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     description = "Permission retrieved successfully",
                     content = @Content(schema = @Schema(implementation = PermissionResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "404",
                     description = "Not Found - Permission does not exist",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
@@ -97,7 +98,7 @@ public class PermissionController {
             tags = {"Permission Management (Admin)"}
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     description = "Paginated list of permissions retrieved successfully",
                     content = @Content(schema = @Schema(implementation = PageResponseDTO.class))
@@ -113,7 +114,7 @@ public class PermissionController {
 
     @Operation(summary = "Find permissions by resource name", tags = {"Permission Management (Admin)"})
     @ApiResponses(
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = PermissionResponseDTO.class)))
             )
@@ -128,7 +129,7 @@ public class PermissionController {
 
     @Operation(summary = "Find permissions by action name", tags = {"Permission Management (Admin)"})
     @ApiResponses(
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PermissionResponseDTO.class)))
             )
     )
@@ -142,7 +143,7 @@ public class PermissionController {
 
     @Operation(summary = "Find permissions by full name", tags = {"Permission Management (Admin)"})
     @ApiResponses(
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PermissionResponseDTO.class)))
             )
     )
@@ -155,7 +156,7 @@ public class PermissionController {
 
     @Operation(summary = "Get all distinct resource names", description = "Returns a list of all unique resource identifiers (e.g., ['user', 'booking', 'flight']).", tags = {"Permission Management (Admin)"})
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     description = "List of resources retrieved successfully",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class)))
@@ -169,7 +170,7 @@ public class PermissionController {
 
     @Operation(summary = "Get all distinct action names", description = "Returns a list of all unique action identifiers (e.g., ['create', 'read', 'delete']).", tags = {"Permission Management (Admin)"})
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     description = "List of actions retrieved successfully",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class)))
@@ -187,22 +188,22 @@ public class PermissionController {
             tags = {"Permission Management (Admin)"}
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "200",
                     description = "Permission updated successfully",
                     content = @Content(schema = @Schema(implementation = PermissionResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input or validation error",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "404",
                     description = "Not Found - Permission to update does not exist",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "409",
                     description = "Conflict - Updated permission name already exists",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
@@ -224,16 +225,16 @@ public class PermissionController {
             tags = {"Permission Management (Admin)"}
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "204",
                     description = "Permission deleted successfully (No Content)"
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "404",
                     description = "Not Found - Permission to delete does not exist",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            @ApiResponse(
                     responseCode = "409",
                     description = "Conflict - Cannot delete permission (e.g., still linked to a role)",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))

@@ -14,27 +14,29 @@ public class AirportMapper {
 
     private final FlightMapper flightMapper;
 
-    public AirportResponseDTO toResponseDTO(Airport airline) {
-        if (airline == null) return null;
+    public AirportResponseDTO toBasicResponseDTO(Airport airport) {
+        if (airport == null) return null;
         return AirportResponseDTO.builder()
-                .id(airline.getId())
-                .code(airline.getCode())
-                .name(airline.getName())
-                .city(airline.getCity())
-                .country(airline.getCountry())
-                .active(airline.getActive())
-                .arrivingFlights(airline.getArrivingFlights()
-                        .stream()
-                        .map(flightMapper::toBasicResponseDTO)
-                        .collect(Collectors.toSet())
-                )
-                .departingFlights(airline.getDepartingFlights()
-                        .stream()
-                        .map(flightMapper::toBasicResponseDTO)
-                        .collect(Collectors.toSet())
-                )
-                .createdAt(airline.getCreatedAt())
-                .updatedAt(airline.getUpdatedAt())
+                .id(airport.getId())
+                .code(airport.getCode())
+                .name(airport.getName())
+                .city(airport.getCity())
+                .country(airport.getCountry())
+                .active(airport.getActive())
+                .build();
+    }
+
+    public AirportResponseDTO toResponseDTO(Airport airport) {
+        if (airport == null) return null;
+        return AirportResponseDTO.builder()
+                .id(airport.getId())
+                .code(airport.getCode())
+                .name(airport.getName())
+                .city(airport.getCity())
+                .country(airport.getCountry())
+                .active(airport.getActive())
+                .createdAt(airport.getCreatedAt())
+                .updatedAt(airport.getUpdatedAt())
                 .build();
     }
 

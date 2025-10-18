@@ -2,17 +2,25 @@ package com.karunamay.airlink.mapper.flight;
 
 import com.karunamay.airlink.dto.flight.AirlineRequestDTO;
 import com.karunamay.airlink.dto.flight.AirlineResponseDTO;
-import com.karunamay.airlink.dto.permission.PermissionUpdateRequestDTO;
 import com.karunamay.airlink.model.flight.Airline;
-import com.karunamay.airlink.model.user.Permission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class AirlineMapper {
+
+    public AirlineResponseDTO toBasicResponseDTO(Airline airline) {
+        if (airline == null) return null;
+        return AirlineResponseDTO.builder()
+                .id(airline.getId())
+                .code(airline.getCode())
+                .name(airline.getName())
+                .country(airline.getCountry())
+                .logoUrl(airline.getLogoUrl())
+                .active(airline.getActive())
+                .build();
+    }
 
     public AirlineResponseDTO toResponseDTO(Airline airline) {
         if (airline == null) return null;

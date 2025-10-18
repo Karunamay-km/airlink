@@ -40,11 +40,6 @@ public class FlightMapper {
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
                 .basePrice(flight.getBasePrice())
-                .bookings(flight.getBookings()
-                        .stream()
-                        .map(bookingMapper::toResponseDTO)
-                        .collect(Collectors.toSet())
-                )
                 .seats(flight.getSeats())
                 .build();
     }

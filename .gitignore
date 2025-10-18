@@ -40,3 +40,4 @@ build/
 /.env
 /.prod.env
 /.local.prod.env
+/.local.env

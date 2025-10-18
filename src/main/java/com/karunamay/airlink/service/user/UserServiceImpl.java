@@ -2,10 +2,7 @@ package com.karunamay.airlink.service.user;
 
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.dto.user.*;
-import com.karunamay.airlink.exceptions.BusinessException;
-import com.karunamay.airlink.exceptions.DuplicateResourceException;
-import com.karunamay.airlink.exceptions.JwtAuthenticationException;
-import com.karunamay.airlink.exceptions.ResourceNotFoundException;
+import com.karunamay.airlink.exceptions.*;
 import com.karunamay.airlink.mapper.user.UserMapper;
 import com.karunamay.airlink.model.user.Role;
 import com.karunamay.airlink.model.user.User;
@@ -182,6 +179,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO checkAuth(String accessToken) {
+        if (accessToken == null) {
+            throw new BusinessException("Invalid credentials. Please login.");
+        }
         Claims claims = jwt.validateAndParseClaims(accessToken).getPayload();
         String username = claims.getSubject();
         return userMapper.toBasicResponseDTO(findUserByUsernameOrThrow(username));

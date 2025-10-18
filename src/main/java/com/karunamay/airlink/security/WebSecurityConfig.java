@@ -1,11 +1,6 @@
 package com.karunamay.airlink.security;
 
 import com.karunamay.airlink.service.user.CustomUserDetailsService;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +41,8 @@ public class WebSecurityConfig {
     @Value("${app.cors.swaggerClient}")
     private String swaggerClient;
 
-    @Value("${app.cors.serverUrl}")
-    private String serverUrl;
+    @Value("${app.cors.swaggerServerUrl}")
+    private String swaggerServerUrl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,7 +66,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of(frontendClient, swaggerClient, serverUrl)
+                List.of(frontendClient, swaggerClient, swaggerServerUrl)
         );
         configuration.setAllowedMethods(List.of("GET", "PUT", "PATCH", "DELETE", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

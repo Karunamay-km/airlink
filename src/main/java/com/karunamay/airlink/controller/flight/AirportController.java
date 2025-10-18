@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +24,18 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/admin/airport")
+@RequestMapping("/airport")
 @Tag(name = "Airport", description = "Operations related to managing airport entities (CRUD and lookup).")
 public class AirportController {
 
     private final AirportService airportService;
 
     @Operation(summary = "Create a new airport", description = "Registers a new airport with a unique code and name.")
-    @ApiResponse(responseCode = "201", description = "Airport created successfully", content = @Content(schema = @Schema(implementation = AirportResponseDTO.class)))
+    @ApiResponse(responseCode = "201", description = "Airport created successfully", content = @Content(schema = @Schema(implementation = RestAirportResponseDTO.class)))
     @ApiResponse(responseCode = "400", description = "Invalid input data or validation failure")
     @ApiResponse(responseCode = "409", description = "Airport code or name already exists")
     @PostMapping
+    @PreAuthorize("hasAuthority('airport:create')")
     public ResponseEntity<RestApiResponse<AirportResponseDTO>> createAirport(
             @Valid @RequestBody AirportRequestDTO requestDTO) {
         log.info("REST: Create new airport request received (Code: {}).", requestDTO.getCode());
@@ -44,7 +46,7 @@ public class AirportController {
 
     @Operation(summary = "Get all airports", description = "Retrieves a list of all airports (both active and inactive).")
     @ApiResponse(responseCode = "200", description = "List of all airports retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AirportResponseDTO.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestAirportListResponseDTO.class))))
     @GetMapping
     public ResponseEntity<RestApiResponse<List<AirportResponseDTO>>> getAllAirports() {
         log.info("REST: Fetching all airports.");
@@ -53,7 +55,7 @@ public class AirportController {
 
     @Operation(summary = "Get all active airports", description = "Retrieves a list of all currently active airports.")
     @ApiResponse(responseCode = "200", description = "List of active airports retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AirportResponseDTO.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestAirportListResponseDTO.class))))
     @GetMapping("/active")
     public ResponseEntity<RestApiResponse<List<AirportResponseDTO>>> getActiveAirports() {
         log.info("REST: Fetching all active airports.");
@@ -62,7 +64,7 @@ public class AirportController {
 
     @Operation(summary = "Get airport by ID", description = "Retrieves an airport by its unique ID.")
     @ApiResponse(responseCode = "200", description = "Airport retrieved successfully",
-            content = @Content(schema = @Schema(implementation = AirportResponseDTO.class)))
+            content = @Content(schema = @Schema(implementation = RestAirportResponseDTO.class)))
     @ApiResponse(responseCode = "404", description = "Airport not found")
     @GetMapping("/{id}")
     public ResponseEntity<RestApiResponse<AirportResponseDTO>> getAirportById(
@@ -74,7 +76,7 @@ public class AirportController {
     @Operation(summary = "Search airport by IATA/ICAO code",
             description = "Retrieves an airport by its unique code (case-insensitive).")
     @ApiResponse(responseCode = "200", description = "Airport retrieved successfully",
-            content = @Content(schema = @Schema(implementation = AirportResponseDTO.class)))
+            content = @Content(schema = @Schema(implementation = RestAirportResponseDTO.class)))
     @ApiResponse(responseCode = "404", description = "Airport not found")
     @GetMapping("/search/by-code")
     public ResponseEntity<RestApiResponse<AirportResponseDTO>> getAirportByCode(
@@ -85,7 +87,7 @@ public class AirportController {
 
     @Operation(summary = "Search airport by full name", description = "Retrieves an airport by its exact name (case-insensitive).")
     @ApiResponse(responseCode = "200", description = "Airport retrieved successfully",
-            content = @Content(schema = @Schema(implementation = AirportResponseDTO.class)))
+            content = @Content(schema = @Schema(implementation = RestAirportResponseDTO.class)))
     @ApiResponse(responseCode = "404", description = "Airport not found")
     @GetMapping("/search/by-name")
     public ResponseEntity<RestApiResponse<AirportResponseDTO>> getAirportByName(
@@ -96,7 +98,7 @@ public class AirportController {
 
     @Operation(summary = "Search airports by city", description = "Retrieves a list of airports serving a specific city (case-insensitive).")
     @ApiResponse(responseCode = "200", description = "List of airports retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AirportResponseDTO.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestAirportListResponseDTO.class))))
     @GetMapping("/search/by-city")
     public ResponseEntity<RestApiResponse<List<AirportResponseDTO>>> getAirportsByCity(
             @Parameter(description = "The city the airport is located in") @RequestParam String city) {
@@ -106,11 +108,12 @@ public class AirportController {
 
     @Operation(summary = "Update an existing airport", description = "Updates details for an existing airport by ID.")
     @ApiResponse(responseCode = "200", description = "Airport updated successfully",
-            content = @Content(schema = @Schema(implementation = AirportResponseDTO.class)))
+            content = @Content(schema = @Schema(implementation = RestAirportResponseDTO.class)))
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @ApiResponse(responseCode = "404", description = "Airport not found")
     @ApiResponse(responseCode = "409", description = "Updated code or name already exists on another airport")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('airport:update')")
     public ResponseEntity<RestApiResponse<AirportResponseDTO>> updateAirport(
             @Parameter(description = "The ID of the airport to update") @PathVariable Long id,
             @Valid @RequestBody AirportRequestDTO requestDTO) {
@@ -124,10 +127,17 @@ public class AirportController {
     @ApiResponse(responseCode = "404", description = "Airport not found")
     @ApiResponse(responseCode = "409", description = "Cannot delete: Airport has associated flights")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('airport:delete')")
     public ResponseEntity<RestApiResponse<Void>> deleteAirport(
             @Parameter(description = "The ID of the airport to delete") @PathVariable Long id) {
         log.info("REST: Delete request for airport id {}", id);
         airportService.deleteAirport(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
+    private static class RestAirportResponseDTO extends RestApiResponse<AirportResponseDTO> { }
+
+    private static class RestAirportListResponseDTO extends RestApiResponse<List<AirportResponseDTO>> { }
+
 }
