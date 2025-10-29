@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: karunamay4055/airlink:0.0.1
+    image: karunamay4055/airlink:0.0.2-local-prod
     networks:
       - airlink_internal
     ports:

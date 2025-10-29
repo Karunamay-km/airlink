@@ -4,10 +4,7 @@ import com.karunamay.airlink.model.flight.*;
 import com.karunamay.airlink.model.user.Permission;
 import com.karunamay.airlink.model.user.Role;
 import com.karunamay.airlink.model.user.User;
-import com.karunamay.airlink.repository.flight.AircraftRepository;
-import com.karunamay.airlink.repository.flight.AirlineRepository;
-import com.karunamay.airlink.repository.flight.AirportRepository;
-import com.karunamay.airlink.repository.flight.FlightRepository;
+import com.karunamay.airlink.repository.flight.*;
 import com.karunamay.airlink.repository.user.PermissionRepository;
 import com.karunamay.airlink.repository.user.RoleRepository;
 import com.karunamay.airlink.repository.user.UserRepository;
@@ -31,6 +28,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
+    private final SeatRepository seatRepository;
     private final AircraftRepository aircraftRepository;
     private final FlightRepository flightRepository;
     private final AirportRepository airportRepository;
@@ -46,21 +44,66 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         log.info("Initializing application data...");
 
-        initializePermissions();
-
-        initializeRoles();
-
+//        initializePermissions();
+//
+//        initializeRoles();
+//
         initializeAdminUser();
-
-        initializeAirlines();
-
-        initializeAirports();
-
-        initializeAircrafts();
-
-        initializeFlights();
+//
+//        initializeAirlines();
+//
+//        initializeAirports();
+//
+//        initializeAircrafts();
+//
+//        initializeFlights();
+//
+//        initializeSeats();
 
         log.info("Application data initialized successfully");
+    }
+
+    private void initializeSeats() {
+        if (seatRepository.count() == 0) {
+            log.info("Creating default seat data...");
+
+            // Fetch required Flights
+            Flight flightAI101 = flightRepository.findByFlightNo("AI-101").orElse(null);
+            Flight flight6E505 = flightRepository.findByFlightNo("6E-505").orElse(null);
+            Flight flightAI202 = flightRepository.findByFlightNo("AI-202").orElse(null);
+
+            if (flightAI101 == null || flight6E505 == null || flightAI202 == null) {
+                log.warn("Skipping seat initialization: Required Flights (AI-101, 6E-505, AI-202) not found.");
+                return;
+            }
+
+            List<Seat> seats = List.of(
+                    // Seats for AI-101 (DEL -> BOM) - Airbus A320 (180 capacity)
+                    Seat.builder().flight(flightAI101).seatNo("1A").seatClass(SeatClass.BUSINESS).available(true).priceModifier(new BigDecimal("1.80")).build(),
+                    Seat.builder().flight(flightAI101).seatNo("1B").seatClass(SeatClass.BUSINESS).available(true).priceModifier(new BigDecimal("1.80")).build(),
+                    Seat.builder().flight(flightAI101).seatNo("1C").seatClass(SeatClass.BUSINESS).available(false).priceModifier(new BigDecimal("1.80")).build(), // Example booked seat
+                    Seat.builder().flight(flightAI101).seatNo("10A").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build(),
+                    Seat.builder().flight(flightAI101).seatNo("10B").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build(),
+                    Seat.builder().flight(flightAI101).seatNo("11A").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build(),
+
+                    // Seats for 6E-505 (BOM -> BLR) - Boeing 737-800 (162 capacity)
+                    Seat.builder().flight(flight6E505).seatNo("5D").seatClass(SeatClass.PREMIUM_ECONOMY).available(true).priceModifier(new BigDecimal("1.30")).build(),
+                    Seat.builder().flight(flight6E505).seatNo("5E").seatClass(SeatClass.PREMIUM_ECONOMY).available(true).priceModifier(new BigDecimal("1.30")).build(),
+                    Seat.builder().flight(flight6E505).seatNo("15A").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build(),
+                    Seat.builder().flight(flight6E505).seatNo("15F").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build(),
+
+                    // Seats for AI-202 (BLR -> DEL) - Boeing 787 Dreamliner (250 capacity)
+                    Seat.builder().flight(flightAI202).seatNo("2A").seatClass(SeatClass.FIRST).available(true).priceModifier(new BigDecimal("2.50")).build(),
+                    Seat.builder().flight(flightAI202).seatNo("2B").seatClass(SeatClass.FIRST).available(true).priceModifier(new BigDecimal("2.50")).build(),
+                    Seat.builder().flight(flightAI202).seatNo("7A").seatClass(SeatClass.BUSINESS).available(true).priceModifier(new BigDecimal("1.90")).build(),
+                    Seat.builder().flight(flightAI202).seatNo("20C").seatClass(SeatClass.ECONOMY).available(true).priceModifier(new BigDecimal("1.00")).build()
+            );
+
+            seatRepository.saveAll(seats);
+            log.info("Initialized {} sample seats.", seats.size());
+        } else {
+            log.info("Seats already exist. Skipping initialization.");
+        }
     }
 
     private void initializeAircrafts() {
@@ -164,7 +207,20 @@ public class DataInitializer implements CommandLineRunner {
                             .arrivalTime(now.plusDays(2).plusHours(12))
                             .basePrice(new BigDecimal("8000.00"))
                             .status(FlightStatus.SCHEDULED)
+                            .build(),
+
+                    Flight.builder()
+                            .flightNo("AI-302")
+                            .airline(airIndia)
+                            .aircraft(b787)
+                            .srcAirport(blr)
+                            .destAirport(del)
+                            .departureTime(now.plusDays(2).plusHours(9))
+                            .arrivalTime(now.plusDays(2).plusHours(12))
+                            .basePrice(new BigDecimal("3000.00"))
+                            .status(FlightStatus.SCHEDULED)
                             .build()
+
             );
 
             flightRepository.saveAll(flights);

@@ -2,13 +2,16 @@ package com.karunamay.airlink.mapper.booking;
 
 import com.karunamay.airlink.dto.booking.PassengerRequestDTO;
 import com.karunamay.airlink.dto.booking.PassengerResponseDTO;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.exceptions.ResourceNotFoundException;
+import com.karunamay.airlink.mapper.PageMapper;
 import com.karunamay.airlink.model.booking.Booking;
 import com.karunamay.airlink.model.booking.Passenger;
 import com.karunamay.airlink.model.flight.Seat;
 import com.karunamay.airlink.repository.booking.BookingRepository;
 import com.karunamay.airlink.repository.flight.SeatRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +20,7 @@ public class PassengerMapper {
 
     private final BookingRepository bookingRepository;
     private final SeatRepository seatRepository;
+    private final PageMapper pageMapper;
 
     public PassengerResponseDTO toBasicResponseDTO(Passenger passenger) {
         if (passenger == null) return null;
@@ -56,6 +60,40 @@ public class PassengerMapper {
                 .build();
     }
 
+    public PageResponseDTO<PassengerResponseDTO> toPageResponseDTO(
+            Page<Passenger> passengerPage
+    ) {
+        return pageMapper.toPageResponse(passengerPage, this::toBasicResponseDTO);
+    }
+
+    public void updateEntityFromRequest(Passenger passenger, PassengerRequestDTO requestDTO) {
+        if (passenger == null || requestDTO == null) return;
+        if (requestDTO.getFullName() != null) {
+            passenger.setFullName(requestDTO.getFullName());
+        }
+        if (requestDTO.getDob() != null) {
+            passenger.setDob(requestDTO.getDob());
+        }
+        if (requestDTO.getGender() != null) {
+            passenger.setGender(requestDTO.getGender());
+        }
+        if (requestDTO.getBookingId() != null) {
+            Booking booking = bookingRepository.findById(requestDTO.getBookingId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Booking with id " + requestDTO.getBookingId() + " not found")
+                    );
+            passenger.setBooking(booking);
+        }
+        if (requestDTO.getSeatId() != null) {
+            Seat seat = seatRepository.findById(requestDTO.getSeatId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Seat with id " + requestDTO.getSeatId() + " not found")
+                    );
+            passenger.setSeat(seat);
+        }
+    }
 
     public Passenger toEntity(PassengerRequestDTO request) {
 

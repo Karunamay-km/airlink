@@ -75,4 +75,8 @@ public class Seat {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public Boolean hasBooking() {
+        return this.booking != null;
+    }
 }

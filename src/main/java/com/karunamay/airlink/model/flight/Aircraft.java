@@ -34,7 +34,7 @@ public class Aircraft {
 
     @NotBlank(message = "Model is required")
     @Size(min = 3, max = 50, message = "Model name must be between 3 and 50 characters")
-    @Column(name = "model", nullable = false, unique = true, length = 50)
+    @Column(name = "model", nullable = false, length = 50)
     private String model;
 
     @NotBlank(message = "Registration number is required")

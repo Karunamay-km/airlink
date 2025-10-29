@@ -2,6 +2,8 @@ package com.karunamay.airlink.mapper.flight;
 
 import com.karunamay.airlink.dto.flight.FlightRequestDTO;
 import com.karunamay.airlink.dto.flight.FlightResponseDTO;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
+import com.karunamay.airlink.mapper.PageMapper;
 import com.karunamay.airlink.mapper.booking.BookingMapper;
 import com.karunamay.airlink.model.flight.Aircraft;
 import com.karunamay.airlink.model.flight.Airline;
@@ -12,6 +14,7 @@ import com.karunamay.airlink.repository.flight.AirlineRepository;
 import com.karunamay.airlink.repository.flight.AirportRepository;
 import com.karunamay.airlink.service.BaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -24,6 +27,8 @@ public class FlightMapper {
     private final BookingMapper bookingMapper;
     private final AirlineMapper airlineMapper;
     private final AircraftMapper aircraftMapper;
+    private final AirportMapper airportMapper;
+    private final PageMapper pageMapper;
     private final AirlineRepository airlineRepository;
     private final AircraftRepository aircraftRepository;
     private final AirportRepository airportRepository;
@@ -32,15 +37,14 @@ public class FlightMapper {
         if (flight == null) return null;
         return FlightResponseDTO.builder()
                 .id(flight.getId())
-                .airline(airlineMapper.toResponseDTO(flight.getAirline()))
-                .aircraft(aircraftMapper.toResponseDTO(flight.getAircraft()))
-                .srcAirport(flight.getSrcAirport())
-                .destAirport(flight.getDestAirport())
+                .airline(airlineMapper.toBasicResponseDTO(flight.getAirline()))
+                .aircraft(aircraftMapper.toBasicResponseDTO(flight.getAircraft()))
+                .srcAirport(airportMapper.toBasicResponseDTO(flight.getSrcAirport()))
+                .destAirport(airportMapper.toBasicResponseDTO(flight.getDestAirport()))
                 .flightNo(flight.getFlightNo())
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
                 .basePrice(flight.getBasePrice())
-                .seats(flight.getSeats())
                 .build();
     }
 
@@ -50,22 +54,20 @@ public class FlightMapper {
                 .id(flight.getId())
                 .airline(airlineMapper.toResponseDTO(flight.getAirline()))
                 .aircraft(aircraftMapper.toResponseDTO(flight.getAircraft()))
-                .srcAirport(flight.getSrcAirport())
-                .destAirport(flight.getDestAirport())
+                .srcAirport(airportMapper.toBasicResponseDTO(flight.getSrcAirport()))
+                .destAirport(airportMapper.toBasicResponseDTO(flight.getDestAirport()))
                 .flightNo(flight.getFlightNo())
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
                 .basePrice(flight.getBasePrice())
                 .status(flight.getStatus())
-                .bookings(flight.getBookings()
-                        .stream()
-                        .map(bookingMapper::toResponseDTO)
-                        .collect(Collectors.toSet())
-                )
-                .seats(flight.getSeats())
                 .createdAt(flight.getCreatedAt())
                 .updatedAt(flight.getUpdatedAt())
                 .build();
+    }
+
+    public PageResponseDTO<FlightResponseDTO> toPageResponseDTO(Page<Flight> flightPage) {
+        return pageMapper.toPageResponse(flightPage, this::toBasicResponseDTO);
     }
 
     public Flight toEntity(FlightRequestDTO requestDTO) {

@@ -41,3 +41,4 @@ build/
 /.prod.env
 /.local.prod.env
 /.local.env
+/data/

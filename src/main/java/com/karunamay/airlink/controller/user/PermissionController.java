@@ -38,8 +38,7 @@ public class PermissionController {
 
     @Operation(
             summary = "Create a new permission",
-            description = "Defines a new permission (e.g., 'user:create'). Requires a unique name.",
-            tags = {"Permission(create)"}
+            description = "Defines a new permission (e.g., 'user:create'). Requires a unique name."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -70,8 +69,7 @@ public class PermissionController {
 
     @Operation(
             summary = "Get permission by ID",
-            description = "Retrieves a single permission definition.",
-            tags = {"Permission Management (Admin)"}
+            description = "Retrieves a single permission definition."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -94,8 +92,7 @@ public class PermissionController {
 
     @Operation(
             summary = "Get all permissions with pagination",
-            description = "Retrieves a paginated list of all defined permissions.",
-            tags = {"Permission Management (Admin)"}
+            description = "Retrieves a paginated list of all defined permissions."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -112,7 +109,7 @@ public class PermissionController {
     }
 
 
-    @Operation(summary = "Find permissions by resource name", tags = {"Permission Management (Admin)"})
+    @Operation(summary = "Find permissions by resource name")
     @ApiResponses(
             @ApiResponse(
                     responseCode = "200",
@@ -127,7 +124,7 @@ public class PermissionController {
     }
 
 
-    @Operation(summary = "Find permissions by action name", tags = {"Permission Management (Admin)"})
+    @Operation(summary = "Find permissions by action name")
     @ApiResponses(
             @ApiResponse(
                     responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PermissionResponseDTO.class)))
@@ -141,7 +138,7 @@ public class PermissionController {
     }
 
 
-    @Operation(summary = "Find permissions by full name", tags = {"Permission Management (Admin)"})
+    @Operation(summary = "Find permissions by full name")
     @ApiResponses(
             @ApiResponse(
                     responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PermissionResponseDTO.class)))
@@ -154,7 +151,7 @@ public class PermissionController {
         return ResponseEntity.ok(RestApiResponse.success(permissionService.getPermissionsByName(name)));
     }
 
-    @Operation(summary = "Get all distinct resource names", description = "Returns a list of all unique resource identifiers (e.g., ['user', 'booking', 'flight']).", tags = {"Permission Management (Admin)"})
+    @Operation(summary = "Get all distinct resource names", description = "Returns a list of all unique resource identifiers (e.g., ['user', 'booking', 'flight']).")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -168,7 +165,7 @@ public class PermissionController {
         return ResponseEntity.ok(RestApiResponse.success(permissionService.getAllPermissionResource()));
     }
 
-    @Operation(summary = "Get all distinct action names", description = "Returns a list of all unique action identifiers (e.g., ['create', 'read', 'delete']).", tags = {"Permission Management (Admin)"})
+    @Operation(summary = "Get all distinct action names", description = "Returns a list of all unique action identifiers (e.g., ['create', 'read', 'delete']).")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -184,8 +181,8 @@ public class PermissionController {
 
     @Operation(
             summary = "Update an existing permission",
-            description = "Updates the resource and/or action parts of an existing permission. The full name is derived from these parts.",
-            tags = {"Permission Management (Admin)"}
+            description = "Updates the resource and/or action parts of an existing permission. The full name is derived from these parts."
+
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -221,8 +218,8 @@ public class PermissionController {
 
     @Operation(
             summary = "Delete a permission",
-            description = "Permanently deletes a permission by ID. Deletion may fail if the permission is assigned to roles.",
-            tags = {"Permission Management (Admin)"}
+            description = "Permanently deletes a permission by ID. Deletion may fail if the permission is assigned to roles."
+
     )
     @ApiResponses(value = {
             @ApiResponse(

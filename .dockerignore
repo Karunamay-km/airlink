@@ -43,3 +43,5 @@ credentials/
 # Eclipse/IDE workspace settings
 .settings/
 .project
+
+/data/

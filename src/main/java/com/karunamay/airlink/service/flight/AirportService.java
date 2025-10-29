@@ -2,11 +2,11 @@ package com.karunamay.airlink.service.flight;
 
 import com.karunamay.airlink.dto.flight.AirportRequestDTO;
 import com.karunamay.airlink.dto.flight.AirportResponseDTO;
-
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface AirportService {
-
     AirportResponseDTO createAirport(AirportRequestDTO requestDTO);
 
     AirportResponseDTO getAirportById(Long id);
@@ -15,11 +15,14 @@ public interface AirportService {
 
     AirportResponseDTO getAirportByCode(String code);
 
-    List<AirportResponseDTO> getAirportsByCity(String city);
+    PageResponseDTO<AirportResponseDTO> getAirportsByCity(
+        String city,
+        Pageable pageable
+    );
 
-    List<AirportResponseDTO> getActiveAirports();
+    PageResponseDTO<AirportResponseDTO> getActiveAirports(Pageable pageable);
 
-    List<AirportResponseDTO> getAllAirports();
+    PageResponseDTO<AirportResponseDTO> getAllAirports(Pageable pageable);
 
     AirportResponseDTO updateAirport(Long id, AirportRequestDTO requestDTO);
 

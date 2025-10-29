@@ -2,7 +2,6 @@ package com.karunamay.airlink.dto.flight;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.karunamay.airlink.dto.booking.BookingResponseDTO;
-import com.karunamay.airlink.model.booking.Booking;
 import com.karunamay.airlink.model.flight.*;
 import lombok.*;
 
@@ -20,15 +19,13 @@ public class FlightResponseDTO {
     private Long id;
     private AirlineResponseDTO airline;
     private AircraftResponseDTO aircraft;
-    private Airport srcAirport;
-    private Airport destAirport;
+    private AirportResponseDTO srcAirport;
+    private AirportResponseDTO destAirport;
     private String flightNo;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private BigDecimal basePrice;
     private FlightStatus status;
-    private Set<BookingResponseDTO> bookings;
-    private Set<Seat> seats;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
