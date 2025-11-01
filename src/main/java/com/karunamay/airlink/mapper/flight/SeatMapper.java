@@ -1,13 +1,17 @@
 package com.karunamay.airlink.mapper.flight;
 
+import com.karunamay.airlink.dto.flight.FlightResponseDTO;
 import com.karunamay.airlink.dto.flight.SeatRequestDTO;
 import com.karunamay.airlink.dto.flight.SeatResponseDTO;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
+import com.karunamay.airlink.mapper.PageMapper;
 import com.karunamay.airlink.model.flight.Flight;
 import com.karunamay.airlink.model.flight.Seat;
 import com.karunamay.airlink.repository.flight.FlightRepository;
 import com.karunamay.airlink.repository.flight.SeatRepository;
 import com.karunamay.airlink.service.BaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 
@@ -19,6 +23,7 @@ public class SeatMapper {
     private final SeatRepository airlineRepository;
     private final FlightRepository flightRepository;
     private final BaseService baseService;
+    private final PageMapper pageMapper;
 
     public SeatResponseDTO toBasicResponseDTO(Seat seat) {
         if (seat == null) return null;
@@ -45,6 +50,10 @@ public class SeatMapper {
                 .updatedAt(seat.getUpdatedAt())
                 .build();
 
+    }
+
+    public PageResponseDTO<SeatResponseDTO> toPageResponseDTO(Page<Seat> seatPage) {
+        return pageMapper.toPageResponse(seatPage, this::toBasicResponseDTO);
     }
 
     public Seat toEntity(SeatRequestDTO requestDTO) {

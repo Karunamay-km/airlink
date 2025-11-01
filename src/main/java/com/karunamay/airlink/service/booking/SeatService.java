@@ -2,16 +2,16 @@ package com.karunamay.airlink.service.booking;
 
 import com.karunamay.airlink.dto.flight.SeatRequestDTO;
 import com.karunamay.airlink.dto.flight.SeatResponseDTO;
-
-import java.util.List;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
+import org.springframework.data.domain.Pageable;
 
 public interface SeatService {
 
-    List<SeatResponseDTO> getAllByFlightNo(String flightNo);
+    PageResponseDTO<SeatResponseDTO> getAllByFlightNo(String flightNo, Pageable pageable);
 
     SeatResponseDTO getSeatByNo(String seatNo);
 
-    List<SeatResponseDTO> getSeatByAvailableTrue();
+    PageResponseDTO<SeatResponseDTO> getSeatByAvailableTrue(Pageable pageable);
 
     SeatResponseDTO createSeat(SeatRequestDTO requestDTO);
 

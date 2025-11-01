@@ -27,7 +27,7 @@ public class SecurityService {
         User userDetails = (User) authentication.getPrincipal();
         Long userId = userDetails.getId();
 
-        return bookingId.equals(userId);
+        return bookingUserId.equals(userId);
 
     }
 

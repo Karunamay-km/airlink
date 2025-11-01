@@ -2,13 +2,16 @@ package com.karunamay.airlink.mapper.booking;
 
 import com.karunamay.airlink.dto.booking.BookingRequestDTO;
 import com.karunamay.airlink.dto.booking.BookingResponseDTO;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.exceptions.ResourceNotFoundException;
+import com.karunamay.airlink.mapper.PageMapper;
 import com.karunamay.airlink.model.booking.Booking;
 import com.karunamay.airlink.model.flight.Flight;
 import com.karunamay.airlink.model.user.User;
 import com.karunamay.airlink.repository.flight.FlightRepository;
 import com.karunamay.airlink.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -20,6 +23,31 @@ public class BookingMapper {
     private final PassengerMapper passengerMapper;
     private final FlightRepository flightRepository;
     private final UserRepository userRepository;
+    private final PageMapper pageMapper;
+
+    public BookingResponseDTO toBasicResponseDTO(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
+        return BookingResponseDTO.builder()
+                .id(booking.getId())
+                .pnrCode(booking.getPnrCode())
+                .userId(booking.getUser().getId())
+                .flightId(booking.getFlight().getId())
+                .totalAmount(booking.getTotalAmount())
+                .passengerCount(booking.getPassengerCount())
+                .bookingStatus(booking.getBookingStatus())
+                .paymentStatus(booking.getPaymentStatus())
+                .bookedAt(booking.getCreatedAt())
+                .passengers(booking
+                        .getPassengers()
+                        .stream()
+                        .map(passengerMapper::toBasicResponseDTO)
+                        .toList()
+                )
+                .build();
+    }
 
     public BookingResponseDTO toResponseDTO(Booking booking) {
         if (booking == null) {
@@ -34,7 +62,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .pnrCode(booking.getPnrCode())
                 .userId(booking.getUser().getId())
-                .flight(flight)
+                .flightId(booking.getFlight().getId())
                 .totalAmount(booking.getTotalAmount())
                 .passengerCount(booking.getPassengerCount())
                 .bookingStatus(booking.getBookingStatus())
@@ -69,9 +97,10 @@ public class BookingMapper {
                         .collect(Collectors.toSet())
                 )
                 .build();
+    }
 
-//        NOTE: pnr, seat, will be set by service layer
-//        TODO: handle the above in booking service layer
+    public PageResponseDTO<BookingResponseDTO> toPageResponseDTO(Page<Booking> bookingPage) {
+        return pageMapper.toPageResponse(bookingPage, this::toBasicResponseDTO);
     }
 
 }

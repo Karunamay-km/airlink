@@ -2,14 +2,10 @@ package com.karunamay.airlink.service.booking;
 
 import com.karunamay.airlink.dto.booking.BookingRequestDTO;
 import com.karunamay.airlink.dto.booking.BookingResponseDTO;
+import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.model.booking.BookingStatus;
 import com.karunamay.airlink.model.user.User;
-import com.karunamay.airlink.repository.booking.BookingRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
@@ -19,7 +15,10 @@ public interface BookingService {
 
     BookingResponseDTO getBookingByPnrCode(String pnrCode);
 
-    List<BookingResponseDTO> getBookingsByStatus(BookingStatus status);
+    PageResponseDTO<BookingResponseDTO> getBookingsByStatus(BookingStatus status, Pageable pageable);
+
+    PageResponseDTO<BookingResponseDTO> getAllBookings(Pageable pageable);
 
     BookingResponseDTO createBooking(BookingRequestDTO requestDTO);
+    
 }

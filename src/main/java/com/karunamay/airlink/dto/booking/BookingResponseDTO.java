@@ -23,7 +23,7 @@ public class BookingResponseDTO {
     private Long id;
     private String pnrCode;
     private Long userId;
-    private Flight flight;
+    private Long flightId;
     private BigDecimal totalAmount;
     private Integer passengerCount;
     private BookingStatus bookingStatus;
