@@ -68,6 +68,27 @@ public class BookingController {
         );
     }
 
+    @Operation(
+            summary = "Update an existing booking",
+            description = "Updates details for an existing booking by ID (e.g., status changes, re-pricing). Requires 'booking:update' authority."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Booking updated successfully",
+            content = @Content(schema = @Schema(implementation = BaseBookingResponseDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Booking not found")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @SecurityService.isOwnerOfTheBooking(#id, authentication)")
+    public ResponseEntity<RestApiResponse<BookingResponseDTO>> updateBooking(
+            @Parameter(description = "The ID of the booking to update") @PathVariable Long id,
+            @Valid @RequestBody BookingRequestDTO requestDTO
+    ) {
+        log.info("REST: Update request for booking id {}", id);
+        return ResponseEntity.ok(
+                RestApiResponse.success(bookingService.updateBooking(id, requestDTO))
+        );
+    }
 
     @Operation(
             summary = "Get booking by ID",
@@ -116,16 +137,21 @@ public class BookingController {
     @ApiResponse(
             responseCode = "200",
             description = "Booking retrieved successfully",
-            content = @Content(schema = @Schema(implementation = BaseBookingResponseDTO.class))
+            content = @Content(schema = @Schema(implementation = PaginationBookingResponseDTO.class))
     )
     @ApiResponse(responseCode = "404", description = "Booking not found for this user")
     @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<RestApiResponse<BookingResponseDTO>> getBookingForCurrentUser(
-            @AuthenticationPrincipal User user
+    public ResponseEntity<RestApiResponse<PageResponseDTO<BookingResponseDTO>>> getBookingsForCurrentUser(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction
     ) {
         log.info("REST: Fetch booking for authenticated user: {}", user.getUsername());
-        return ResponseEntity.ok(RestApiResponse.success(bookingService.getBookingByUser(user)));
+        Pageable pageable = PageRequest.of(page, size, direction, sortBy);
+        return ResponseEntity.ok(RestApiResponse.success(bookingService.getBookingsByUser(user, pageable)));
     }
 
 

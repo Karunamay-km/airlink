@@ -73,9 +73,12 @@ public class Booking {
     @NotNull(message = "PNR code is required")
     private String pnrCode;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking")
+    @Builder.Default
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking", cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = false)
     private Set<Seat> seats = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "booking", orphanRemoval = true)
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -100,6 +103,7 @@ public class Booking {
     public void addSeat(Seat seat) {
         this.seats.add(seat);
         seat.setBooking(this);
+        seat.setAvailable(false);
     }
 
     public void removeSeat(Seat seat) {

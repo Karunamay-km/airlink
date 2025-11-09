@@ -11,7 +11,7 @@ public interface BookingService {
 
     BookingResponseDTO getBookingById(Long id);
 
-    BookingResponseDTO getBookingByUser(User user);
+    PageResponseDTO<BookingResponseDTO> getBookingsByUser(User user, Pageable pageable);
 
     BookingResponseDTO getBookingByPnrCode(String pnrCode);
 
@@ -20,5 +20,7 @@ public interface BookingService {
     PageResponseDTO<BookingResponseDTO> getAllBookings(Pageable pageable);
 
     BookingResponseDTO createBooking(BookingRequestDTO requestDTO);
+
+    BookingResponseDTO updateBooking(Long id, BookingRequestDTO requestDTO);
     
 }

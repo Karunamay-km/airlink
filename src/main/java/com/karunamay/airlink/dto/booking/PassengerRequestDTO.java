@@ -1,13 +1,13 @@
 package com.karunamay.airlink.dto.booking;
 
 import com.karunamay.airlink.model.booking.Gender;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-
+import com.karunamay.airlink.model.booking.Suffix;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
@@ -17,9 +17,7 @@ public class PassengerRequestDTO {
 
     private Long bookingId;
 
-    @NotBlank(message = "Full name is required")
-    @Size(min = 3, max = 100, message = "Full name must be between 3 and 100 characters")
-    private String fullName;
+    private Long id;
 
     @NotNull(message = "Date of Birth is required")
     @Past(message = "Date of Birth must be in the past")
@@ -30,4 +28,27 @@ public class PassengerRequestDTO {
 
     @NotNull(message = "Seat ID for assignment is required")
     private Long seatId;
+
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    private String middleName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    @NotNull(message = "Suffix is required")
+    private Suffix suffix;
+
+    @NotBlank(message = "Valid govt id number is required")
+    private String govtIdNo;
+
+    @NotBlank(message = "Email is required")
+    private String email;
+
+    @NotBlank(message = "Phone is required")
+    private String phone;
+
+    @NotNull(message = "Checked bag count is required")
+    private Integer checkedBagCount;
 }

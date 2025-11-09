@@ -30,9 +30,15 @@ public class PassengerMapper {
 
         return PassengerResponseDTO.builder()
                 .id(passenger.getId())
-                .fullName(passenger.getFullName())
+                .firstName(passenger.getFirstName())
+                .middleName(passenger.getMiddleName())
+                .lastName(passenger.getLastName())
+                .suffix(passenger.getSuffix())
                 .dob(passenger.getDob())
                 .gender(passenger.getGender())
+                .email(passenger.getEmail())
+                .phone(passenger.getPhone())
+                .checkedBagCount(passenger.getCheckedBagCount())
                 .seatId(seatId)
                 .seatNo(seatNo)
                 .build();
@@ -50,9 +56,15 @@ public class PassengerMapper {
         return PassengerResponseDTO.builder()
                 .id(passenger.getId())
                 .bookingId(bookingId)
-                .fullName(passenger.getFullName())
+                .firstName(passenger.getFirstName())
+                .middleName(passenger.getMiddleName())
+                .lastName(passenger.getLastName())
+                .suffix(passenger.getSuffix())
                 .dob(passenger.getDob())
                 .gender(passenger.getGender())
+                .email(passenger.getEmail())
+                .phone(passenger.getPhone())
+                .checkedBagCount(passenger.getCheckedBagCount())
                 .seatId(seatId)
                 .seatNo(seatNo)
                 .createdAt(passenger.getCreatedAt())
@@ -68,15 +80,40 @@ public class PassengerMapper {
 
     public void updateEntityFromRequest(Passenger passenger, PassengerRequestDTO requestDTO) {
         if (passenger == null || requestDTO == null) return;
-        if (requestDTO.getFullName() != null) {
-            passenger.setFullName(requestDTO.getFullName());
+
+        if (requestDTO.getFirstName() != null) {
+            passenger.setFirstName(requestDTO.getFirstName());
         }
+        if (requestDTO.getMiddleName() != null) {
+            passenger.setMiddleName(requestDTO.getMiddleName());
+        }
+        if (requestDTO.getLastName() != null) {
+            passenger.setLastName(requestDTO.getLastName());
+        }
+        if (requestDTO.getSuffix() != null) {
+            passenger.setSuffix(requestDTO.getSuffix());
+        }
+
         if (requestDTO.getDob() != null) {
             passenger.setDob(requestDTO.getDob());
         }
         if (requestDTO.getGender() != null) {
             passenger.setGender(requestDTO.getGender());
         }
+        if (requestDTO.getGovtIdNo() != null) {
+            passenger.setGovtIdNo(requestDTO.getGovtIdNo());
+        }
+        if (requestDTO.getEmail() != null) {
+            passenger.setEmail(requestDTO.getEmail());
+        }
+        if (requestDTO.getPhone() != null) {
+            passenger.setPhone(requestDTO.getPhone());
+        }
+
+        if (requestDTO.getCheckedBagCount() != null) {
+            passenger.setCheckedBagCount(requestDTO.getCheckedBagCount());
+        }
+
         if (requestDTO.getBookingId() != null) {
             Booking booking = bookingRepository.findById(requestDTO.getBookingId())
                     .orElseThrow(() ->
@@ -85,6 +122,7 @@ public class PassengerMapper {
                     );
             passenger.setBooking(booking);
         }
+
         if (requestDTO.getSeatId() != null) {
             Seat seat = seatRepository.findById(requestDTO.getSeatId())
                     .orElseThrow(() ->
@@ -97,24 +135,30 @@ public class PassengerMapper {
 
     public Passenger toEntity(PassengerRequestDTO request) {
 
-        Booking booking = bookingRepository.findById(request.getBookingId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Booking with id " + request.getBookingId() + " not found")
-                );
+//        Booking booking = bookingRepository.findById(request.getBookingId())
+//                .orElseThrow(() ->
+//                        new ResourceNotFoundException(
+//                                "Booking with id " + request.getBookingId() + " not found")
+//                );
 
         Seat seat = seatRepository.findById(request.getSeatId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Seat with id " + request.getSeatId() + " not found")
                 );
-
         Passenger passenger = Passenger.builder()
-                .fullName(request.getFullName())
+                .firstName(request.getFirstName())
+                .middleName(request.getMiddleName())
+                .lastName(request.getLastName())
+                .suffix(request.getSuffix())
                 .dob(request.getDob())
-                .booking(booking)
-                .seat(seat)
                 .gender(request.getGender())
+                .govtIdNo(request.getGovtIdNo())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .checkedBagCount(request.getCheckedBagCount())
+//                .booking(booking)
+                .seat(seat)
                 .build();
 
         seat.setPassenger(passenger);

@@ -2,10 +2,7 @@ package com.karunamay.airlink.model.booking;
 
 import com.karunamay.airlink.model.flight.Seat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,8 +19,6 @@ import java.time.LocalDateTime;
         },
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_passenger_seat", columnNames = "seat_id"),
-                @UniqueConstraint(name = "uk_booking_person", columnNames = {"booking_id", "full_name", "dob"}
-                )
         })
 
 @Getter
@@ -40,13 +35,34 @@ public class Passenger {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
+    @JoinColumn(
+            name = "booking_id",
+            foreignKey = @ForeignKey(
+                    name="fk_passenger_booking",
+                    foreignKeyDefinition = "FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE SET NULL"
+            )
+    )
     private Booking booking;
 
-    @NotBlank(message = "Full name is required")
-    @Size(min = 3, max = 100, message = "Full name must be between 3 and 100 characters")
-    @Column(name = "full_name", nullable = false, length = 100)
-    private String fullName;
+    @NotBlank(message = "First name is required")
+    @Size(min = 3, max = 100, message = "First name must be between 3 and 100 characters")
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+
+    @Builder.Default
+    @Size(max = 100, message = "Middle name must be less than 100 characters")
+    @Column(name = "middle_name", nullable = false, length = 100)
+    private String middleName = "";
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 3, max = 100, message = "Last name must be between 3 and 100 characters")
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+
+    @NotNull(message = "Suffix is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "suffix", nullable = false, length = 5)
+    private Suffix suffix;
 
     @NotNull(message = "Date of Birth is required")
     @Past(message = "Date of Birth must be in the past")
@@ -58,7 +74,23 @@ public class Passenger {
     @Column(name = "gender", nullable = false, length = 10)
     private Gender gender;
 
-    @NotNull(message="Seat is required")
+    @NotNull(message = "Valid govt id number is required")
+    @Column(name = "id_number", nullable = false)
+    private String govtIdNo;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
+
+    @NotBlank(message = "Phone is required")
+    @Column(name = "phone", nullable = false, length = 100)
+    private String phone;
+
+    @Column(name = "checked_bag_count")
+    private int checkedBagCount;
+
+    @NotNull(message = "Seat is required")
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "seat_id", nullable = false, unique = true)
     private Seat seat;

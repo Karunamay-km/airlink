@@ -59,8 +59,9 @@ public class PassengerController {
             @Valid @RequestBody PassengerRequestDTO requestDTO
     ) {
         log.info(
-                "REST: Create new passenger request received (Full Name: {}).",
-                requestDTO.getFullName()
+                "REST: Create new passenger request received (First Name: {}, Last Name: {}).",
+                requestDTO.getFirstName(),
+                requestDTO.getLastName()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 RestApiResponse.success(passengerService.createPassenger(requestDTO))
@@ -113,7 +114,7 @@ public class PassengerController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "ASC") Sort.Direction direction
     ) {
-        log.info("REST: Fetching all passengers.");
+        log.info("REST: Fetching all passengers (page: {}, size: {}).", page, size);
         Pageable pageable = PageRequest.of(page, size, direction, sortBy);
         return ResponseEntity.ok(
                 RestApiResponse.success(passengerService.getAllPassengers(pageable))
@@ -145,7 +146,12 @@ public class PassengerController {
             ) @PathVariable Long id,
             @Valid @RequestBody PassengerRequestDTO requestDTO
     ) {
-        log.info("REST: Update request for passenger id {}", id);
+        log.info(
+                "REST: Update request for passenger id {} (First Name: {}, Last Name: {}).",
+                id,
+                requestDTO.getFirstName(),
+                requestDTO.getLastName()
+        );
         return ResponseEntity.ok(
                 RestApiResponse.success(
                         passengerService.updatePassengerById(id, requestDTO)
