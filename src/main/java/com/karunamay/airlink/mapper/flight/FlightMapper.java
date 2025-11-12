@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 public class FlightMapper {
 
     private final BaseService baseService;
-    private final BookingMapper bookingMapper;
     private final AirlineMapper airlineMapper;
     private final AircraftMapper aircraftMapper;
     private final AirportMapper airportMapper;

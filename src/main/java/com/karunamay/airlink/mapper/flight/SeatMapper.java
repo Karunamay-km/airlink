@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @RequiredArgsConstructor
 public class SeatMapper {
@@ -28,52 +27,58 @@ public class SeatMapper {
     public SeatResponseDTO toBasicResponseDTO(Seat seat) {
         if (seat == null) return null;
         return SeatResponseDTO.builder()
-                .id(seat.getId())
-                .seatNo(seat.getSeatNo())
-                .seatClass(seat.getSeatClass())
-                .available(seat.getAvailable())
-                .priceModifier(seat.getPriceModifier())
-                .build();
-
+            .id(seat.getId())
+            .seatNo(seat.getSeatNo())
+            .seatClass(seat.getSeatClass())
+            .available(seat.getAvailable())
+            .priceModifier(seat.getPriceModifier())
+            .build();
     }
 
     public SeatResponseDTO toResponseDTO(Seat seat) {
         if (seat == null) return null;
         return SeatResponseDTO.builder()
-                .id(seat.getId())
-                .flight(flightMapper.toBasicResponseDTO(seat.getFlight()))
-                .seatNo(seat.getSeatNo())
-                .seatClass(seat.getSeatClass())
-                .available(seat.getAvailable())
-                .priceModifier(seat.getPriceModifier())
-                .createdAt(seat.getCreatedAt())
-                .updatedAt(seat.getUpdatedAt())
-                .build();
-
+            .id(seat.getId())
+            .flightId(seat.getFlight().getId())
+            .seatNo(seat.getSeatNo())
+            .seatClass(seat.getSeatClass())
+            .available(seat.getAvailable())
+            .priceModifier(seat.getPriceModifier())
+            .createdAt(seat.getCreatedAt())
+            .updatedAt(seat.getUpdatedAt())
+            .build();
     }
 
-    public PageResponseDTO<SeatResponseDTO> toPageResponseDTO(Page<Seat> seatPage) {
+    public PageResponseDTO<SeatResponseDTO> toPageResponseDTO(
+        Page<Seat> seatPage
+    ) {
         return pageMapper.toPageResponse(seatPage, this::toBasicResponseDTO);
     }
 
     public Seat toEntity(SeatRequestDTO requestDTO) {
         if (requestDTO == null) return null;
 
-        Flight flight = baseService.findByIdOrThrow(requestDTO.getFlightId(), flightRepository);
+        Flight flight = baseService.findByIdOrThrow(
+            requestDTO.getFlightId(),
+            flightRepository
+        );
 
         return Seat.builder()
-                .flight(flight)
-                .seatNo(requestDTO.getSeatNo())
-                .seatClass(requestDTO.getSeatClass())
-                .available(requestDTO.getAvailable())
-                .priceModifier(requestDTO.getPriceModifier())
-                .build();
+            .flight(flight)
+            .seatNo(requestDTO.getSeatNo())
+            .seatClass(requestDTO.getSeatClass())
+            .available(requestDTO.getAvailable())
+            .priceModifier(requestDTO.getPriceModifier())
+            .build();
     }
 
     public void updateEntityFromRequest(Seat seat, SeatRequestDTO requestDTO) {
         if (seat == null || requestDTO == null) return;
         if (requestDTO.getFlightId() != null) {
-            Flight flight = baseService.findByIdOrThrow(requestDTO.getFlightId(), flightRepository);
+            Flight flight = baseService.findByIdOrThrow(
+                requestDTO.getFlightId(),
+                flightRepository
+            );
             seat.setFlight(flight);
         }
         if (requestDTO.getSeatNo() != null) {
@@ -89,5 +94,4 @@ public class SeatMapper {
             seat.setPriceModifier(requestDTO.getPriceModifier());
         }
     }
-
 }

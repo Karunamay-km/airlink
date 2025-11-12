@@ -2,6 +2,7 @@ package com.karunamay.airlink.dto.booking;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.karunamay.airlink.dto.flight.FlightResponseDTO;
 import com.karunamay.airlink.model.booking.BookingStatus;
 import com.karunamay.airlink.model.flight.Flight;
 import com.karunamay.airlink.model.payment.PaymentStatus;
@@ -23,7 +24,7 @@ public class BookingResponseDTO {
     private Long id;
     private String pnrCode;
     private Long userId;
-    private Long flightId;
+    private FlightResponseDTO flight;
     private BigDecimal totalAmount;
     private Integer passengerCount;
     private BookingStatus bookingStatus;

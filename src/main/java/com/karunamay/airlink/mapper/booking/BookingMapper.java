@@ -6,6 +6,7 @@ import com.karunamay.airlink.dto.booking.PassengerRequestDTO;
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.exceptions.ResourceNotFoundException;
 import com.karunamay.airlink.mapper.PageMapper;
+import com.karunamay.airlink.mapper.flight.FlightMapper;
 import com.karunamay.airlink.model.booking.Booking;
 import com.karunamay.airlink.model.booking.Passenger;
 import com.karunamay.airlink.model.flight.Flight;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ public class BookingMapper {
     private final FlightRepository flightRepository;
     private final UserRepository userRepository;
     private final PageMapper pageMapper;
+    private final FlightMapper flightMapper;
     private final PassengerRepository passengerRepository;
 
     public BookingResponseDTO toBasicResponseDTO(Booking booking) {
@@ -39,7 +43,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .pnrCode(booking.getPnrCode())
                 .userId(booking.getUser().getId())
-                .flightId(booking.getFlight().getId())
+                .flight(flightMapper.toBasicResponseDTO(booking.getFlight()))
                 .totalAmount(booking.getTotalAmount())
                 .passengerCount(booking.getPassengerCount())
                 .bookingStatus(booking.getBookingStatus())
@@ -72,7 +76,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .pnrCode(booking.getPnrCode())
                 .userId(booking.getUser().getId())
-                .flightId(booking.getFlight().getId())
+                .flight(flightMapper.toBasicResponseDTO(booking.getFlight()))
                 .totalAmount(booking.getTotalAmount())
                 .passengerCount(booking.getPassengerCount())
                 .bookingStatus(booking.getBookingStatus())
@@ -135,23 +139,61 @@ public class BookingMapper {
             booking.setPassengerCount(requestDTO.getPassengerCount());
         }
         if (!requestDTO.getPassengerList().isEmpty()) {
-            Set<Passenger> passengers = booking.getPassengers();
-            passengers.stream().peek(passenger -> {
-                PassengerRequestDTO passengerRequestDTO = requestDTO
-                        .getPassengerList()
-                        .stream()
-                        .filter(r -> r.getId().equals(passenger.getId()))
-                        .findAny()
-                        .orElseThrow(() -> new ResourceNotFoundException("Passenger with id " + passenger.getId() + " not found"));
+//            List<Passenger> passengers = requestDTO.getPassengerList()
+//                    .stream()
+//                    .map(passengerDto -> {
+//                        passengerMapper.updateEntityFromRequest(passengerDto, );
+//                    })
 
-                passengerMapper.updateEntityFromRequest(passenger, passengerRequestDTO);
+
+            Set<Passenger> passengers = booking.getPassengers();
+
+            requestDTO.getPassengerList().forEach(passengerDto -> {
+                Optional<Passenger> existingPassenger =
+                        passengers.stream()
+                                .filter(passenger -> passenger.getId().equals(passengerDto.getId()))
+                                .findAny();
+                if (existingPassenger.isPresent()) {
+                    passengerMapper.updateEntityFromRequest(existingPassenger.get(), passengerDto);
+                } else {
+                    Passenger newPassenger = passengerMapper.toEntity(passengerDto);
+                    booking.addPassenger(newPassenger);
+                    booking.addSeat(newPassenger.getSeat());
+                    newPassenger.setBooking(booking);
+                }
             });
 
-            booking.setPassengers(passengers);
+//            booking.setPassengers(passengers);
+
+//            passengers.forEach(passenger -> {
+//                PassengerRequestDTO passengerRequestDTO = requestDTO
+//                        .getPassengerList()
+//                        .stream()
+//                        .filter(r -> r.getId().equals(passenger.getId()))
+//                        .findAny()
+//                        .orElseThrow(() -> new ResourceNotFoundException("Passenger with id " + passenger.getId() + " not found"));
+//
+//                passengerMapper.updateEntityFromRequest(passenger, passengerRequestDTO);
+//                System.out.println(passenger.getSuffix());
+//            });
+//            passengers.stream().peek(passenger -> {
+//                PassengerRequestDTO passengerRequestDTO = requestDTO
+//                        .getPassengerList()
+//                        .stream()
+//                        .filter(r -> r.getId().equals(passenger.getId()))
+//                        .findAny()
+//                        .orElseThrow(() -> new ResourceNotFoundException("Passenger with id " + passenger.getId() + " not found"));
+//
+//                passengerMapper.updateEntityFromRequest(passenger, passengerRequestDTO);
+//                System.out.println(passenger.getSuffix());
+//            });
+
+//            booking.setPassengers(passengers);
         }
         if (requestDTO.getBookingStatus() != null) {
             booking.setBookingStatus(requestDTO.getBookingStatus());
         }
+
     }
 
 }

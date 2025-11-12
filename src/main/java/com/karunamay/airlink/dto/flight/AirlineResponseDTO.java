@@ -22,8 +22,6 @@ public class AirlineResponseDTO {
     private String country;
     private String logoUrl;
     private Boolean active;
-    private Set<AircraftResponseDTO> ownedAircrafts;
-    private Set<FlightResponseDTO> operatedFlights;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
