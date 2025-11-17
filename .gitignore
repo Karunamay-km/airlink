@@ -42,3 +42,4 @@ build/
 /.local.prod.env
 /.local.env
 /data/
+/bin/

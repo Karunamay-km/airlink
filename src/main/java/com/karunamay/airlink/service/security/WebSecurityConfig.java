@@ -1,4 +1,4 @@
-package com.karunamay.airlink.security;
+package com.karunamay.airlink.service.security;
 
 import com.karunamay.airlink.service.user.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;

@@ -2,7 +2,8 @@ package com.karunamay.airlink.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.karunamay.airlink.model.booking.Booking;
-import com.karunamay.airlink.model.booking.BookingStatus;
+import com.karunamay.airlink.model.payment.Order;
+import com.karunamay.airlink.model.token.BlackListToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.awt.print.Book;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"password", "roles"})
-@EqualsAndHashCode(of = "id")
+@ToString(exclude = {"password", "roles", "bookings"})
 @Builder
 public class User implements UserDetails, Serializable {
 
@@ -119,7 +118,16 @@ public class User implements UserDetails, Serializable {
             mappedBy = "user",
             fetch = FetchType.LAZY
     )
+    @Builder.Default
     private Set<Booking> bookings = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy = "user")
+    @Builder.Default
+    private Set<BlackListToken> blackListTokens = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "user")
+    @Builder.Default
+    private Set<Order> orders = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -186,6 +194,14 @@ public class User implements UserDetails, Serializable {
 
     public void removeBooking(Booking booking) {
         this.bookings.remove(booking);
+    }
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+    }
+
+    public void removeOrder(Order order) {
+        this.orders.remove(order);
     }
 
     public void updateLastLogin() {

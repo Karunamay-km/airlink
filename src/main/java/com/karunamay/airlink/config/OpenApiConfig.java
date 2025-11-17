@@ -55,7 +55,6 @@ public class OpenApiConfig {
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
 
-                // Servers
                 .servers(Arrays.asList(
                         new Server()
                                 .url(swaggerServerUrl)
@@ -65,7 +64,6 @@ public class OpenApiConfig {
                                 .description("Production Server")
                 ))
 
-                // Security Schemes
                 .components(new Components()
                         // JWT Bearer Token
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()

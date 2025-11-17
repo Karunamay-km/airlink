@@ -32,6 +32,8 @@ public interface UserService {
 
     void resetPassword(String email);
 
+    void logout(String accessToken, String refreshToken);
+
     UserResponseDTO assignRole(Long userId, Long roleId);
 
     UserResponseDTO removeRole(Long userId, Long roleId);

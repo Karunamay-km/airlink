@@ -2,6 +2,7 @@ package com.karunamay.airlink.model.booking;
 
 import com.karunamay.airlink.model.flight.Flight;
 import com.karunamay.airlink.model.flight.Seat;
+import com.karunamay.airlink.model.payment.Order;
 import com.karunamay.airlink.model.payment.PaymentStatus;
 import com.karunamay.airlink.model.user.User;
 import jakarta.persistence.*;
@@ -14,6 +15,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString(exclude = {"user", "flight", "seats", "passengers"})
+@ToString(exclude = {"user", "flight", "seats", "passengers", "order"})
 public class Booking {
 
     @Id
@@ -69,6 +71,9 @@ public class Booking {
     @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
+    @Column(name = "payment_id")
+    private String paymentId;
+
     @Column(name = "pnr_code", nullable = false, unique = true, length = 10)
     @NotNull(message = "PNR code is required")
     private String pnrCode;
@@ -82,6 +87,9 @@ public class Booking {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "booking", orphanRemoval = true)
     private Set<Passenger> passengers = new HashSet<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Order order;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -89,6 +97,39 @@ public class Booking {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public String getFlightRoute() {
+        return "Flight from " +
+                this.getFlight().getSrcAirport().getCity() +
+                " to " +
+                this.getFlight().getDestAirport().getCity();
+    }
+
+    public String getFlightDescription() {
+        String departure = this.getFlight().getDepartureTime()
+                .format(DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a"));
+        StringBuilder description = new StringBuilder()
+                .append("Flight Booking Details:\n")
+                .append("• Route: ")
+                .append(this.getFlight().getSrcAirport().getCity())
+                .append(" → ")
+                .append(this.getFlight().getDestAirport().getCity())
+                .append("\n• Flight No: ")
+                .append(this.getFlight().getFlightNo())
+                .append("\n• From: ")
+                .append(this.getFlight().getSrcAirport().getCode())
+                .append(" | To: ")
+                .append(this.getFlight().getDestAirport().getCode())
+                .append("\n• Departure: ")
+                .append(departure)
+                .append("\n• Passengers: ")
+                .append(this.getPassengerCount())
+                .append("\n• PNR: ")
+                .append(this.getPnrCode())
+                .append("\n• Booking ID: ")
+                .append(this.getId());
+        return description.toString();
+    }
 
     public void addPassenger(Passenger passenger) {
         this.passengers.add(passenger);

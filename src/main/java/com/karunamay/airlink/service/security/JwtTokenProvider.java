@@ -1,4 +1,4 @@
-package com.karunamay.airlink.security;
+package com.karunamay.airlink.service.security;
 
 import com.karunamay.airlink.exceptions.JwtAuthenticationException;
 import com.karunamay.airlink.exceptions.TokenExpiredException;
@@ -15,10 +15,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -59,6 +56,7 @@ public class JwtTokenProvider {
                 .audience().add(audience).and()
                 .expiration(accessTokenExpiryDate)
                 .subject(username)
+                .id(UUID.randomUUID().toString())
                 .claims(claims)
                 .header().add(headers).and()
                 .signWith(KeyLoader.getPrivateKey(privateKeySystemPath), SignatureAlgorithm.RS256)
@@ -83,6 +81,7 @@ public class JwtTokenProvider {
                 .audience().add(audience).and()
                 .expiration(refreshTokenExpiryDate)
                 .subject(username)
+                .id(UUID.randomUUID().toString())
                 .claims(claims)
                 .header().add(headers).and()
                 .signWith(KeyLoader.getPrivateKey(privateKeySystemPath), SignatureAlgorithm.RS256)

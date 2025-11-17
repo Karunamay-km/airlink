@@ -40,6 +40,7 @@ public class BookingRequestDTO {
     @Min(value = 1, message = "At least one passenger must be booked")
     private Integer passengerCount;
 
+    @Valid
     @NotEmpty(
         message = "Booking must contain at least one passenger",
         groups = OnCreate.class

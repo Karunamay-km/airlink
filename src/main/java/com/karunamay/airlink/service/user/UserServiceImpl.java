@@ -2,14 +2,18 @@ package com.karunamay.airlink.service.user;
 
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.dto.user.*;
-import com.karunamay.airlink.exceptions.*;
+import com.karunamay.airlink.exceptions.BusinessException;
+import com.karunamay.airlink.exceptions.DuplicateResourceException;
+import com.karunamay.airlink.exceptions.JwtAuthenticationException;
+import com.karunamay.airlink.exceptions.ResourceNotFoundException;
 import com.karunamay.airlink.mapper.user.UserMapper;
+import com.karunamay.airlink.model.token.BlackListToken;
 import com.karunamay.airlink.model.user.Role;
 import com.karunamay.airlink.model.user.User;
+import com.karunamay.airlink.repository.token.BlackListTokenRepository;
 import com.karunamay.airlink.repository.user.RoleRepository;
 import com.karunamay.airlink.repository.user.UserRepository;
-import com.karunamay.airlink.security.JwtTokenProvider;
-
+import com.karunamay.airlink.service.security.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +35,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final BlackListTokenRepository blackListTokenRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
@@ -35,14 +43,23 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwt;
 
     @Override
-    public AuthenticationResponseDTO registerUser(UserRegistrationRequestDTO requestDTO) {
-        log.info("Registering new user with username {} and password {}",
-                requestDTO.getUsername(), requestDTO.getPassword());
+    public AuthenticationResponseDTO registerUser(
+            UserRegistrationRequestDTO requestDTO
+    ) {
+        log.info(
+                "Registering new user with username {} and password {}",
+                requestDTO.getUsername(),
+                requestDTO.getPassword()
+        );
         if (userRepository.existsByUsername(requestDTO.getUsername())) {
-            throw new DuplicateResourceException("Username already exists: " + requestDTO.getUsername());
+            throw new DuplicateResourceException(
+                    "Username already exists: " + requestDTO.getUsername()
+            );
         }
         if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new DuplicateResourceException("Email already exists: " + requestDTO.getEmail());
+            throw new DuplicateResourceException(
+                    "Email already exists: " + requestDTO.getEmail()
+            );
         }
 
         User user = userMapper.toEntity(requestDTO);
@@ -50,25 +67,33 @@ public class UserServiceImpl implements UserService {
 
         Role defaultRole = roleRepository
                 .findByName("ROLE_USER")
-                .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Default role not found")
+                );
         user.addRole(defaultRole);
 
         User saveUser = userRepository.save(user);
 
         String accessToken = jwt.generateAccessToken(saveUser.getUsername());
         String refreshToken = jwt.generateRefreshToken(saveUser.getUsername());
-        Long expiresIn = jwt.getExpirationDateFromToken(accessToken).getTime() / 1000;
+        Long expiresIn =
+                jwt.getExpirationDateFromToken(accessToken).getTime() / 1000;
         UserResponseDTO userResponseDTO = userMapper.toResponseDTO(saveUser);
 
-        AuthenticationResponseDTO authenticationResponse = AuthenticationResponseDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
-                .expiresIn(expiresIn)
-                .user(userResponseDTO)
-                .build();
+        AuthenticationResponseDTO authenticationResponse =
+                AuthenticationResponseDTO.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .tokenType("Bearer")
+                        .expiresIn(expiresIn)
+                        .user(userResponseDTO)
+                        .build();
 
-        log.info("User registered successfully with id: {} username: {}", user.getId(), user.getUsername());
+        log.info(
+                "User registered successfully with id: {} username: {}",
+                user.getId(),
+                user.getUsername()
+        );
 
         return authenticationResponse;
     }
@@ -79,7 +104,11 @@ public class UserServiceImpl implements UserService {
         log.debug("Fetching user by id: {}", id);
         User user = userRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user with id: " + id + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "user with id: " + id + " not found"
+                        )
+                );
         return userMapper.toResponseDTO(user);
     }
 
@@ -97,8 +126,11 @@ public class UserServiceImpl implements UserService {
         log.debug("Fetching user detail by username: {}", username);
         User user = userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "user with username: " + username + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "user with username: " + username + " not found"
+                        )
+                );
         return userMapper.toResponseDTO(user);
     }
 
@@ -108,8 +140,11 @@ public class UserServiceImpl implements UserService {
         log.debug("Fetching user detail by email: {}", email);
         User user = userRepository
                 .findByUsername(email)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "user with email: " + email + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "user with email: " + email + " not found"
+                        )
+                );
         return userMapper.toResponseDTO(user);
     }
 
@@ -122,16 +157,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO updateUser(Long userId, UserUpdateRequestDTO requestDTO) {
+    public UserResponseDTO updateUser(
+            Long userId,
+            UserUpdateRequestDTO requestDTO
+    ) {
         User user = findUserByIdOrThrow(userId);
-        if (requestDTO.getUsername() != null && !requestDTO.getUsername().equalsIgnoreCase(user.getUsername())) {
+        if (
+                requestDTO.getUsername() != null &&
+                        !requestDTO.getUsername().equalsIgnoreCase(user.getUsername())
+        ) {
             if (userRepository.existsByUsername(requestDTO.getUsername())) {
-                throw new DuplicateResourceException("Username already exists: " + requestDTO.getUsername());
+                throw new DuplicateResourceException(
+                        "Username already exists: " + requestDTO.getUsername()
+                );
             }
         }
-        if (requestDTO.getEmail() != null && !requestDTO.getEmail().equalsIgnoreCase(user.getEmail())) {
+        if (
+                requestDTO.getEmail() != null &&
+                        !requestDTO.getEmail().equalsIgnoreCase(user.getEmail())
+        ) {
             if (userRepository.existsByEmail(requestDTO.getEmail())) {
-                throw new DuplicateResourceException("Email already exists: " + requestDTO.getEmail());
+                throw new DuplicateResourceException(
+                        "Email already exists: " + requestDTO.getEmail()
+                );
             }
         }
 
@@ -143,7 +191,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponseDTO authenticateUser(UserLoginRequestDTO credentials) {
+    public AuthenticationResponseDTO authenticateUser(
+            UserLoginRequestDTO credentials
+    ) {
         log.info("Authenticating user: {}", credentials.getEmail());
         User user = userRepository
                 .findByEmail(credentials.getEmail())
@@ -153,7 +203,12 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("Account is locked");
         }
 
-        if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
+        if (
+                !passwordEncoder.matches(
+                        credentials.getPassword(),
+                        user.getPassword()
+                )
+        ) {
             throw new BusinessException("Invalid Credentials");
         }
 
@@ -162,16 +217,18 @@ public class UserServiceImpl implements UserService {
 
         String accessToken = jwt.generateAccessToken(user.getUsername());
         String refreshToken = jwt.generateRefreshToken(user.getUsername());
-        Long expiresIn = jwt.getExpirationDateFromToken(accessToken).getTime() / 1000;
+        Long expiresIn =
+                jwt.getExpirationDateFromToken(accessToken).getTime() / 1000;
         UserResponseDTO userResponseDTO = userMapper.toBasicResponseDTO(user);
 
-        AuthenticationResponseDTO authenticationResponse = AuthenticationResponseDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
-                .expiresIn(expiresIn)
-                .user(userResponseDTO)
-                .build();
+        AuthenticationResponseDTO authenticationResponse =
+                AuthenticationResponseDTO.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .tokenType("Bearer")
+                        .expiresIn(expiresIn)
+                        .user(userResponseDTO)
+                        .build();
 
         log.info("User authenticated successfully: {}", user.getEmail());
         return authenticationResponse;
@@ -179,13 +236,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO checkAuth(String accessToken) {
-        if (accessToken == null) {
+        Optional<BlackListToken> isBlackListedToken =
+                blackListTokenRepository.findByTokenId(accessToken);
+        if (accessToken == null || accessToken.isBlank() || isBlackListedToken.isPresent()) {
             throw new BusinessException("Invalid credentials. Please login.");
         }
         Claims claims = jwt.validateAndParseClaims(accessToken).getPayload();
         String username = claims.getSubject();
-        return userMapper.toBasicResponseDTO(findUserByUsernameOrThrow(username));
-
+        return userMapper.toBasicResponseDTO(
+                findUserByUsernameOrThrow(username)
+        );
     }
 
     @Override
@@ -193,21 +253,29 @@ public class UserServiceImpl implements UserService {
         log.info("Refreshing token");
 
         if (refreshToken == null || !jwt.isTokenValid(refreshToken)) {
-            throw new JwtAuthenticationException("Invalid or expired refresh token");
+            throw new JwtAuthenticationException(
+                    "Invalid or expired refresh token"
+            );
         }
 
-        String username = jwt.validateAndParseClaims(refreshToken).getPayload().getSubject();
+        String username = jwt
+                .validateAndParseClaims(refreshToken)
+                .getPayload()
+                .getSubject();
 
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!user.isEnabled() || !user.isAccountNonLocked()) {
-            throw new BusinessException("User is not active or has locked account");
+            throw new BusinessException(
+                    "User is not active or has locked account"
+            );
         }
 
         String newAccessToken = jwt.generateAccessToken(username);
-        Long expiresIn = jwt.getExpirationDateFromToken(newAccessToken).getTime() / 1000;
+        Long expiresIn =
+                jwt.getExpirationDateFromToken(newAccessToken).getTime() / 1000;
 
         log.info("Token refreshed successfully for user: {}", username);
 
@@ -224,7 +292,11 @@ public class UserServiceImpl implements UserService {
     public void changePassword(Long id, PasswordChangeRequestDTO requestDTO) {
         log.info("Change password for user with id: {}", id);
 
-        if (!requestDTO.getNewPassword().equalsIgnoreCase(requestDTO.getConfirmPassword())) {
+        if (
+                !requestDTO
+                        .getNewPassword()
+                        .equalsIgnoreCase(requestDTO.getConfirmPassword())
+        ) {
             throw new BusinessException("Both passwords didn't match");
         }
 
@@ -234,14 +306,22 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("Account is locked");
         }
 
-        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+        if (
+                !passwordEncoder.matches(
+                        requestDTO.getCurrentPassword(),
+                        user.getPassword()
+                )
+        ) {
             throw new BusinessException("Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         userRepository.save(user);
 
-        log.info("Password changed successfully for user with id {}", user.getId());
+        log.info(
+                "Password changed successfully for user with id {}",
+                user.getId()
+        );
     }
 
     @Override
@@ -250,6 +330,49 @@ public class UserServiceImpl implements UserService {
         User user = findUserByEmailOrThrow(email);
         // TODO: Implement password reset functionality by sending email
         log.info("Password reset initialize for user: {}", user.getUsername());
+    }
+
+    @Override
+    public void logout(String accessToken, String refreshToken) {
+        log.info("Logout user");
+
+        Claims accessTokenClaims = jwt.validateAndParseClaims(accessToken).getPayload();
+        Claims refreshTokenClaims = jwt.validateAndParseClaims(refreshToken).getPayload();
+
+        String username = accessTokenClaims.getSubject();
+        User user = findUserByUsernameOrThrow(username);
+
+        LocalDate accessTokenExpiry = jwt
+                .getExpirationDateFromToken(accessToken)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        LocalDate refreshTokenExpiry = jwt
+                .getExpirationDateFromToken(refreshToken)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        BlackListToken accToken = BlackListToken.builder()
+                .tokenId(accessTokenClaims.getId())
+                .user(user)
+                .expiryDate(accessTokenExpiry)
+                .build();
+
+        BlackListToken refToken = BlackListToken.builder()
+                .tokenId(refreshTokenClaims.getId())
+                .user(user)
+                .expiryDate(refreshTokenExpiry)
+                .build();
+
+        blackListTokenRepository.save(accToken);
+        blackListTokenRepository.save(refToken);
+
+        log.info(
+                "Access token has been blacklisted for user with id {}",
+                user.getId()
+        );
     }
 
     @Override
@@ -273,10 +396,15 @@ public class UserServiceImpl implements UserService {
         User user = findUserByIdOrThrow(userId);
         Role role = findRoleByIdOrThrow(roleId);
 
-        if (role.getName().equalsIgnoreCase("ROLE_ADMIN") && user.hasRole("ROLE_ADMIN")) {
+        if (
+                role.getName().equalsIgnoreCase("ROLE_ADMIN") &&
+                        user.hasRole("ROLE_ADMIN")
+        ) {
             long countAdmin = userRepository.countUserByRoleName("ROLE_ADMIN");
             if (countAdmin <= 1) {
-                throw new BusinessException("Cannot remove ROLE_ADMIN role from last admin");
+                throw new BusinessException(
+                        "Cannot remove ROLE_ADMIN role from last admin"
+                );
             }
         }
 
@@ -338,24 +466,40 @@ public class UserServiceImpl implements UserService {
     private User findUserByIdOrThrow(Long id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User with id " + id + " not found"
+                        )
+                );
     }
 
     private User findUserByUsernameOrThrow(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username " + username + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User with username " + username + " not found"
+                        )
+                );
     }
 
     private User findUserByEmailOrThrow(String email) {
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User with email " + email + " not found"
+                        )
+                );
     }
 
     private Role findRoleByIdOrThrow(Long id) {
         return roleRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Role with id " + id + " not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Role with id " + id + " not found"
+                        )
+                );
     }
 }

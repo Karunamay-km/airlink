@@ -1,6 +1,8 @@
-package com.karunamay.airlink.security;
+package com.karunamay.airlink.service.security;
 
 import com.karunamay.airlink.exceptions.TokenExpiredException;
+import com.karunamay.airlink.model.token.BlackListToken;
+import com.karunamay.airlink.repository.token.BlackListTokenRepository;
 import com.karunamay.airlink.service.user.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -10,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final BlackListTokenRepository blackListTokenRepository;
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -45,6 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (token == null) {
                 Cookie[] cookies = request.getCookies();
                 if (cookies != null) {
+
+
                     for (Cookie cookie : cookies) {
                         if ("accessToken".equals(cookie.getName())) {
                             token = cookie.getValue();
@@ -54,7 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
 
-            if (token != null) {
+            Optional<BlackListToken> isBlackListedToken = blackListTokenRepository.findByTokenId(token);
+
+            if (token != null && isBlackListedToken.isEmpty()) {
 
                 Claims claims = jwtTokenProvider.validateAndParseClaims(token).getPayload();
                 String username = claims.getSubject();

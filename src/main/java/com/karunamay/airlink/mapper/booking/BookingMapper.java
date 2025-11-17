@@ -139,12 +139,6 @@ public class BookingMapper {
             booking.setPassengerCount(requestDTO.getPassengerCount());
         }
         if (!requestDTO.getPassengerList().isEmpty()) {
-//            List<Passenger> passengers = requestDTO.getPassengerList()
-//                    .stream()
-//                    .map(passengerDto -> {
-//                        passengerMapper.updateEntityFromRequest(passengerDto, );
-//                    })
-
 
             Set<Passenger> passengers = booking.getPassengers();
 
@@ -162,33 +156,6 @@ public class BookingMapper {
                     newPassenger.setBooking(booking);
                 }
             });
-
-//            booking.setPassengers(passengers);
-
-//            passengers.forEach(passenger -> {
-//                PassengerRequestDTO passengerRequestDTO = requestDTO
-//                        .getPassengerList()
-//                        .stream()
-//                        .filter(r -> r.getId().equals(passenger.getId()))
-//                        .findAny()
-//                        .orElseThrow(() -> new ResourceNotFoundException("Passenger with id " + passenger.getId() + " not found"));
-//
-//                passengerMapper.updateEntityFromRequest(passenger, passengerRequestDTO);
-//                System.out.println(passenger.getSuffix());
-//            });
-//            passengers.stream().peek(passenger -> {
-//                PassengerRequestDTO passengerRequestDTO = requestDTO
-//                        .getPassengerList()
-//                        .stream()
-//                        .filter(r -> r.getId().equals(passenger.getId()))
-//                        .findAny()
-//                        .orElseThrow(() -> new ResourceNotFoundException("Passenger with id " + passenger.getId() + " not found"));
-//
-//                passengerMapper.updateEntityFromRequest(passenger, passengerRequestDTO);
-//                System.out.println(passenger.getSuffix());
-//            });
-
-//            booking.setPassengers(passengers);
         }
         if (requestDTO.getBookingStatus() != null) {
             booking.setBookingStatus(requestDTO.getBookingStatus());

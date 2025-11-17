@@ -49,6 +49,5 @@ public class PassengerRequestDTO {
     @NotBlank(message = "Phone is required")
     private String phone;
 
-    @NotNull(message = "Checked bag count is required")
     private Integer checkedBagCount;
 }
