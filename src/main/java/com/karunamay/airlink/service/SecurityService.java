@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-@Service("securityService")
+@Service("SecurityService")
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityService {

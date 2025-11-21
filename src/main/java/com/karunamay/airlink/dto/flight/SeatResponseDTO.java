@@ -1,14 +1,13 @@
 package com.karunamay.airlink.dto.flight;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.karunamay.airlink.model.flight.Flight;
 import com.karunamay.airlink.model.flight.SeatClass;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import jakarta.validation.constraints.*;
 
 @Data
 @Builder
@@ -17,12 +16,29 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SeatResponseDTO {
 
-    private Long id;
-    private Long flightId;
-    private String seatNo;
-    private SeatClass seatClass;
-    private Boolean available = true;
-    private BigDecimal priceModifier;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+@NotNull
+private Long id;
+
+@NotNull
+private Long flightId;
+
+@NotNull
+private String seatNo;
+
+@NotNull
+private SeatClass seatClass;
+
+@NotNull
+private Boolean available = true;
+
+@NotNull
+private BigDecimal priceModifier;
+
+@NotNull
+@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+private LocalDateTime createdAt;
+
+@NotNull
+@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+private LocalDateTime updatedAt;
 }

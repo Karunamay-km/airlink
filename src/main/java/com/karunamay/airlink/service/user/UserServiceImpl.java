@@ -43,24 +43,14 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwt;
 
     @Override
-    public AuthenticationResponseDTO registerUser(
-            UserRegistrationRequestDTO requestDTO
+    public RegistrationResponseDTO registerUser(
+            RegistrationRequestDTO requestDTO
     ) {
         log.info(
                 "Registering new user with username {} and password {}",
                 requestDTO.getUsername(),
                 requestDTO.getPassword()
         );
-        if (userRepository.existsByUsername(requestDTO.getUsername())) {
-            throw new DuplicateResourceException(
-                    "Username already exists: " + requestDTO.getUsername()
-            );
-        }
-        if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new DuplicateResourceException(
-                    "Email already exists: " + requestDTO.getEmail()
-            );
-        }
 
         User user = userMapper.toEntity(requestDTO);
         user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
@@ -72,22 +62,7 @@ public class UserServiceImpl implements UserService {
                 );
         user.addRole(defaultRole);
 
-        User saveUser = userRepository.save(user);
-
-        String accessToken = jwt.generateAccessToken(saveUser.getUsername());
-        String refreshToken = jwt.generateRefreshToken(saveUser.getUsername());
-        Long expiresIn =
-                jwt.getExpirationDateFromToken(accessToken).getTime() / 1000;
-        UserResponseDTO userResponseDTO = userMapper.toResponseDTO(saveUser);
-
-        AuthenticationResponseDTO authenticationResponse =
-                AuthenticationResponseDTO.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .tokenType("Bearer")
-                        .expiresIn(expiresIn)
-                        .user(userResponseDTO)
-                        .build();
+        userRepository.save(user);
 
         log.info(
                 "User registered successfully with id: {} username: {}",
@@ -95,7 +70,7 @@ public class UserServiceImpl implements UserService {
                 user.getUsername()
         );
 
-        return authenticationResponse;
+        return RegistrationResponseDTO.builder().build();
     }
 
     @Override

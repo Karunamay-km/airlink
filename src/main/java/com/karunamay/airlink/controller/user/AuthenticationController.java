@@ -49,23 +49,7 @@ public class AuthenticationController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(
-                                            implementation = RestUserResponseDTO.class
-                                    ),
-                                    examples = @ExampleObject(
-                                            value = """
-                                                           {
-                                                             "success": true,
-                                                             "message": "User registered successfully",
-                                                             "data": {
-                                                               "id": 1,
-                                                               "username": "johndoe",
-                                                               "email": "john@example.com",
-                                                               "firstName": "John",
-                                                               "lastName": "Doe",
-                                                               "roles": ["ROLE_USER"]
-                                                             }
-                                                           }
-                                                    """
+                                            implementation = UserRegistrationResponseDTO.class
                                     )
                             )
                     ),
@@ -89,30 +73,18 @@ public class AuthenticationController {
             description = "User registration details",
             required = true,
             content = @Content(
-                    schema = @Schema(implementation = UserRegistrationRequestDTO.class),
-                    examples = @ExampleObject(
-                            value = """
-                                    {
-                                      "username": "johndoe",
-                                      "email": "john@example.com",
-                                      "password": "SecurePass123!",
-                                      "firstName": "John",
-                                      "lastName": "Doe",
-                                      "phoneNumber": "+1234567890"
-                                    }
-                                    """
-                    )
+                    schema = @Schema(implementation = RegistrationRequestDTO.class)
             )
     )
     @PostMapping("/register")
     public ResponseEntity<
-            RestApiResponse<AuthenticationResponseDTO>
-            > registerUser(@Valid @RequestBody UserRegistrationRequestDTO request) {
+            RestApiResponse<RegistrationResponseDTO>
+            > registerUser(@Valid @RequestBody RegistrationRequestDTO request) {
         log.info(
                 "REST: Register user request received for username: {}",
                 request.getUsername()
         );
-        AuthenticationResponseDTO user = userService.registerUser(request);
+        RegistrationResponseDTO user = userService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 RestApiResponse.success("User registered successfully", user)
         );
@@ -471,4 +443,10 @@ public class AuthenticationController {
                 .header(HttpHeaders.SET_COOKIE, refreshResponseCookie.toString())
                 .build();
     }
+
+    private static class UserRegistrationResponseDTO
+            extends RestApiResponse<RegistrationResponseDTO> {
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package com.karunamay.airlink.dto.user;
 
+import com.karunamay.airlink.validator.auth.PasswordValidation;
+import com.karunamay.airlink.validator.auth.Unique;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,24 +16,29 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRegistrationRequestDTO {
+@PasswordValidation
+public class RegistrationRequestDTO {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @Unique(fieldName ="username")
     private String username;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
+    @Unique(fieldName ="email")
     private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
+    @NotBlank(message = "Confirm password is required")
+    private String confirmPassword;
+
     private String firstName;
     private String lastName;
     private String phone;
     private LocalDate dob;
-
 
 }

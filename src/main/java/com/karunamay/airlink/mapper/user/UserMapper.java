@@ -2,7 +2,7 @@ package com.karunamay.airlink.mapper.user;
 
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.dto.user.UserDetailResponseDTO;
-import com.karunamay.airlink.dto.user.UserRegistrationRequestDTO;
+import com.karunamay.airlink.dto.user.RegistrationRequestDTO;
 import com.karunamay.airlink.dto.user.UserResponseDTO;
 import com.karunamay.airlink.dto.user.UserUpdateRequestDTO;
 import com.karunamay.airlink.mapper.PageMapper;
@@ -81,17 +81,28 @@ public class UserMapper {
                 .build();
     }
 
-    public User toEntity(UserRegistrationRequestDTO requestDTO) {
+    public User toEntity(RegistrationRequestDTO requestDTO) {
         if (requestDTO == null) return null;
-        return User.builder()
+        User user = User.builder()
                 .username(requestDTO.getUsername())
                 .email(requestDTO.getEmail())
                 .password(requestDTO.getPassword())
-                .firstName(requestDTO.getFirstName())
-                .lastName(requestDTO.getLastName())
-                .phone(requestDTO.getPhone())
-                .dob(requestDTO.getDob())
                 .build();
+
+        if (requestDTO.getFirstName() != null) {
+            user.setFirstName(requestDTO.getFirstName());
+        }
+        if (requestDTO.getLastName() != null) {
+            user.setLastName(requestDTO.getLastName());
+        }
+        if (requestDTO.getPhone() != null) {
+            user.setPhone(requestDTO.getPhone());
+        }
+        if (requestDTO.getDob() != null) {
+            user.setDob(requestDTO.getDob());
+        }
+
+        return user;
     }
 
     public void updateEntityFromRequest(User user, UserUpdateRequestDTO requestDTO) {

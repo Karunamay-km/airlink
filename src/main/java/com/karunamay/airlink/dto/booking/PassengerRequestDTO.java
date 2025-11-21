@@ -2,6 +2,7 @@ package com.karunamay.airlink.dto.booking;
 
 import com.karunamay.airlink.model.booking.Gender;
 import com.karunamay.airlink.model.booking.Suffix;
+import com.karunamay.airlink.validation.group.OnCreate;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,8 +16,11 @@ import lombok.*;
 @Data
 public class PassengerRequestDTO {
 
+
+    @NotNull(message="Booking id is required for update", groups=OnCreate.class)
     private Long bookingId;
 
+    @NotNull(message="Passenger id is required for update", groups=OnCreate.class)
     private Long id;
 
     @NotNull(message = "Date of Birth is required")
@@ -26,7 +30,7 @@ public class PassengerRequestDTO {
     @NotNull(message = "Gender is required")
     private Gender gender;
 
-    @NotNull(message = "Seat ID for assignment is required")
+    @NotNull(message = "Seat is required")
     private Long seatId;
 
     @NotBlank(message = "First name is required")
@@ -49,5 +53,7 @@ public class PassengerRequestDTO {
     @NotBlank(message = "Phone is required")
     private String phone;
 
-    private Integer checkedBagCount;
+    @Builder.Default
+    @NotNull()
+    private Integer checkedBagCount = 0;
 }

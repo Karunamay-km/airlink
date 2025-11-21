@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService {
 
-    AuthenticationResponseDTO registerUser(UserRegistrationRequestDTO requestDTO);
+    RegistrationResponseDTO registerUser(RegistrationRequestDTO requestDTO);
 
     UserResponseDTO getUserById(Long id);
 

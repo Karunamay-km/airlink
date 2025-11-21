@@ -1,6 +1,6 @@
 # BUILD STAGE
 
-FROM maven:3.9.11-eclipse-temurin-17-noble AS build
+FROM maven:3.9.11-eclipse-temurin-17-alpine AS build
 
 WORKDIR /airlink
 
@@ -16,13 +16,13 @@ RUN mvn clean package -DskipTests
 
 #RUNTIME STAGE
 
-FROM eclipse-temurin:17.0.16_8-jre-noble
+FROM eclipse-temurin:17-jre-alpine-3.20
 
 LABEL maintiner="Karunamaymurmu@gmail.com"
 LABEL version=0.0.1
 LABEL descripion="Airlink"
 
-RUN groupadd -r appuser && useradd -r -g appuser airlink
+RUN addgroup -S appuser && adduser -S -G appuser airlink
 
 WORKDIR /airlink
 

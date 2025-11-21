@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"password", "roles", "bookings"})
+@ToString(exclude = {"password", "roles", "bookings", "orders"})
 @Builder
 public class User implements UserDetails, Serializable {
 

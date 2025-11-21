@@ -1,6 +1,7 @@
 package com.karunamay.airlink.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +16,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RestApiResponse<T> {
 
+    @NotNull
     private boolean success;
+
+    @NotNull
     private String message;
+
+    @NotNull
     private T data;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @NotNull
     private LocalDateTime timestamp;
 
     public static <T> RestApiResponse<T> success(T data) {

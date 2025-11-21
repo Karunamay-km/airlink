@@ -46,6 +46,7 @@ public class BookingRequestDTO {
         groups = OnCreate.class
     )
     @Size(min = 1, message = "Passenger list cannot be empty")
+    @NotNull
     private List<@Valid PassengerRequestDTO> passengerList;
 
     private BookingStatus bookingStatus;
