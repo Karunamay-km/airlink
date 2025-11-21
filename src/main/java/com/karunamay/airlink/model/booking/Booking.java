@@ -87,7 +87,7 @@ public class Booking {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "booking", orphanRemoval = true)
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "booking", fetch = FetchType.LAZY)
     private Order order;
 
     @CreationTimestamp

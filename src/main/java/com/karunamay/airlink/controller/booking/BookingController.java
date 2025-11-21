@@ -3,6 +3,7 @@ package com.karunamay.airlink.controller.booking;
 import com.karunamay.airlink.dto.api.RestApiResponse;
 import com.karunamay.airlink.dto.booking.BookingRequestDTO;
 import com.karunamay.airlink.dto.booking.BookingResponseDTO;
+import com.karunamay.airlink.dto.error.ErrorResponseDTO;
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.model.booking.BookingStatus;
 import com.karunamay.airlink.model.user.User;
@@ -48,11 +49,17 @@ public class BookingController {
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid input data or validation failure"
+            description = "Invalid input data or validation failure",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
     )
     @ApiResponse(
             responseCode = "404",
-            description = "User or Flight not found"
+            description = "User or Flight not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
     )
     @PostMapping
     @PreAuthorize("isAuthenticated()")
@@ -77,7 +84,20 @@ public class BookingController {
             description = "Booking updated successfully",
             content = @Content(schema = @Schema(implementation = BaseBookingResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Booking not found")
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input data or validation failure",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Booking not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @SecurityService.isOwnerOfTheBooking(#id, authentication)")
     public ResponseEntity<RestApiResponse<BookingResponseDTO>> updateBooking(
@@ -99,7 +119,13 @@ public class BookingController {
             description = "Booking retrieved successfully",
             content = @Content(schema = @Schema(implementation = BaseBookingResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Booking not found")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Booking not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @SecurityService.isOwnerOfTheBooking(#id, authentication)")
     public ResponseEntity<RestApiResponse<BookingResponseDTO>> getBookingById(
@@ -119,7 +145,13 @@ public class BookingController {
             description = "Booking retrieved successfully",
             content = @Content(schema = @Schema(implementation = BaseBookingResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Booking not found")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Booking not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/search/by-pnr")
     @PreAuthorize("hasAuthority('booking:read')")
     public ResponseEntity<RestApiResponse<BookingResponseDTO>> getBookingByPnrCode(
@@ -139,7 +171,13 @@ public class BookingController {
             description = "Booking retrieved successfully",
             content = @Content(schema = @Schema(implementation = PaginationBookingResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Booking not found for this user")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Booking not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RestApiResponse<PageResponseDTO<BookingResponseDTO>>> getBookingsForCurrentUser(
@@ -185,6 +223,13 @@ public class BookingController {
             responseCode = "200",
             description = "List of bookings retrieved",
             content = @Content(schema = @Schema(implementation = PaginationBookingResponseDTO.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Booking not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
     )
     @GetMapping("/search/by-status")
     @PreAuthorize("hasAuthority('booking:read_all')")

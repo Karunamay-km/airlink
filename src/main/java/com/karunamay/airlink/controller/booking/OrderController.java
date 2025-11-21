@@ -3,6 +3,7 @@ package com.karunamay.airlink.controller.booking;
 import com.karunamay.airlink.dto.api.RestApiResponse;
 import com.karunamay.airlink.dto.booking.OrderRequestDTO;
 import com.karunamay.airlink.dto.booking.OrderResponseDTO;
+import com.karunamay.airlink.dto.error.ErrorResponseDTO;
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.model.payment.PaymentStatus;
 import com.karunamay.airlink.model.user.User;
@@ -69,6 +70,13 @@ public class OrderController {
             description = "Order updated successfully",
             content = @Content(schema = @Schema(implementation = BaseOrderResponseDTO.class))
     )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Order not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RestApiResponse<OrderResponseDTO>> updateOrder(
@@ -94,6 +102,13 @@ public class OrderController {
             description = "Order retrieved successfully",
             content = @Content(schema = @Schema(implementation = BaseOrderResponseDTO.class))
     )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Order not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @SecurityService.isOwnerOfOrder(#id, authentication)")
     public ResponseEntity<RestApiResponse<OrderResponseDTO>> getOrderById(
@@ -113,6 +128,18 @@ public class OrderController {
             summary = "Get order by booking ID",
             description = "Retrieves the order associated with a specific booking."
     )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieves orders by booking Id",
+            content = @Content(schema = @Schema(implementation = BaseOrderResponseDTO.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Order not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/search/by-booking")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RestApiResponse<OrderResponseDTO>> getOrderByBookingId(
@@ -130,6 +157,18 @@ public class OrderController {
     @Operation(
             summary = "Get orders of authenticated user",
             description = "Returns paginated orders belonging to the logged-in user."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieves orders of the current user",
+            content = @Content(schema = @Schema(implementation = PaginationOrderResponseDTO.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Order not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
     )
     @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
@@ -153,6 +192,18 @@ public class OrderController {
             summary = "Get orders by payment status",
             description = "Fetches paginated orders filtered by status (e.g., SUCCESS, FAILED, PENDING)."
     )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieves orders by payment status",
+            content = @Content(schema = @Schema(implementation = PaginationOrderResponseDTO.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Order not found",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDTO.class)
+            )
+    )
     @GetMapping("/search/by-status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RestApiResponse<PageResponseDTO<OrderResponseDTO>>> getOrdersByPaymentStatus(
@@ -172,8 +223,10 @@ public class OrderController {
     }
 
     private static class PaginationOrderResponseDTO
-            extends RestApiResponse<PageResponseDTO<OrderResponseDTO>> { }
+            extends RestApiResponse<PageResponseDTO<OrderResponseDTO>> {
+    }
 
     private static class BaseOrderResponseDTO
-            extends RestApiResponse<OrderResponseDTO> { }
+            extends RestApiResponse<OrderResponseDTO> {
+    }
 }

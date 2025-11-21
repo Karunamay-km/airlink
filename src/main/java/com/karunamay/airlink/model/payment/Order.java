@@ -76,7 +76,7 @@ public class Order {
     private User user;
 
     @NotNull(message = "Booking is is required")
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
     @ToString.Exclude
     private Booking booking;

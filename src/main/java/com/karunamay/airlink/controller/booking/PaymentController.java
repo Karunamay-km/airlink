@@ -1,12 +1,9 @@
 package com.karunamay.airlink.controller.booking;
 
 import com.karunamay.airlink.dto.api.RestApiResponse;
-import com.karunamay.airlink.dto.booking.PaymentInitRequestDTO;
-import com.karunamay.airlink.dto.booking.PaymentInitResponseDTO;
-import com.karunamay.airlink.dto.booking.PaymentResponseDTO;
-import com.karunamay.airlink.dto.booking.PaymentStatusCheckRequestDTO;
+import com.karunamay.airlink.dto.payment.PaymentInitRequestDTO;
+import com.karunamay.airlink.dto.payment.PaymentInitResponseDTO;
 import com.karunamay.airlink.dto.error.ErrorResponseDTO;
-import com.karunamay.airlink.service.payment.PaymentService;
 import com.karunamay.airlink.service.payment.StripePaymentService;
 import com.stripe.model.checkout.Session;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final StripePaymentService stripePaymentService;
-    private final PaymentService paymentService;
 
     @Operation(summary = "Initialize payment for bookings")
     @ApiResponse(
@@ -63,22 +59,6 @@ public class PaymentController {
                         PaymentInitResponseDTO.builder().url(session.getUrl()).build()
                 )
         );
-    }
-
-    @GetMapping("/process")
-    @PreAuthorize("isAuthenticated")
-    public ResponseEntity<RestApiResponse<PaymentResponseDTO>> processPayment(
-            @RequestParam String sessionId
-    ) {
-        return ResponseEntity.ok(RestApiResponse.success(paymentService.processPayment(sessionId)));
-    }
-
-    @GetMapping("/check-status")
-    @PreAuthorize("hasRole('ADMIN') or @SecurityService.isOwnerOfTheOrder(#payload.orderId, authentication)")
-    public ResponseEntity<RestApiResponse<PaymentResponseDTO>> checkPaymentStatus(
-            @Valid @RequestBody PaymentStatusCheckRequestDTO payload
-    ) {
-        return ResponseEntity.ok(RestApiResponse.success(paymentService.checkPaymentStatus(payload.getOrderId())));
     }
 
     private static class BasePaymentResponseDTO

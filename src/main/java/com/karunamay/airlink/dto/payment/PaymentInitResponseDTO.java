@@ -1,4 +1,4 @@
-package com.karunamay.airlink.dto.booking;
+package com.karunamay.airlink.dto.payment;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

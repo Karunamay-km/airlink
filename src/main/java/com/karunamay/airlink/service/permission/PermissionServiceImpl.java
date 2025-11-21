@@ -64,6 +64,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PermissionResponseDTO> getPermissionsByResource(String resource) {
         log.info("Fetching permissions by resource {}", resource);
         return permissionRepository.findByResource(resource)
@@ -73,6 +74,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PermissionResponseDTO> getPermissionsByName(String name) {
         log.info("Fetching permissions by name {}", name);
         return permissionRepository.findByName(name)
@@ -82,6 +84,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PermissionResponseDTO> getPermissionsByAction(String action) {
         log.info("Fetching permissions by action {}", action);
         return permissionRepository.findByAction(action)
@@ -91,6 +94,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDTO<PermissionResponseDTO> getAllPermissions(Pageable pageable) {
         log.debug("Fetching all permissions");
         Page<Permission> permissionPage = permissionRepository.findAll(pageable);
@@ -98,12 +102,14 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getAllPermissionResource() {
         log.debug("Fetching all permission resources");
         return permissionRepository.findAllResources();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getAllPermissionAction() {
         log.debug("Fetching all permission actions");
         return permissionRepository.findAllActions();

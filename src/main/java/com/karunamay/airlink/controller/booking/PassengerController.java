@@ -3,6 +3,7 @@ package com.karunamay.airlink.controller.booking;
 import com.karunamay.airlink.dto.api.RestApiResponse;
 import com.karunamay.airlink.dto.booking.PassengerRequestDTO;
 import com.karunamay.airlink.dto.booking.PassengerResponseDTO;
+import com.karunamay.airlink.dto.error.ErrorResponseDTO;
 import com.karunamay.airlink.dto.pagination.PageResponseDTO;
 import com.karunamay.airlink.service.booking.PassengerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,31 +42,28 @@ public class PassengerController {
     @ApiResponse(
             responseCode = "201",
             description = "Passenger created and seat assigned successfully",
-            content = @Content(
-                    schema = @Schema(implementation = BasePassengerResponseDTO.class)
-            )
+            content = @Content(schema = @Schema(implementation = BasePassengerResponseDTO.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid input data or validation failure"
+            description = "Invalid input data or validation failure",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
     )
     @ApiResponse(
             responseCode = "409",
-            description = "The requested seat is already occupied"
+            description = "The requested seat is already occupied",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
     )
     @PostMapping
     @PreAuthorize("hasAuthority('passenger:create')")
     public ResponseEntity<RestApiResponse<PassengerResponseDTO>> createPassenger(
             @Valid @RequestBody PassengerRequestDTO requestDTO
     ) {
-        log.info(
-                "REST: Create new passenger request received (First Name: {}, Last Name: {}).",
-                requestDTO.getFirstName(),
-                requestDTO.getLastName()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                RestApiResponse.success(passengerService.createPassenger(requestDTO))
-        );
+        log.info("REST: Create new passenger (First Name: {}, Last Name: {}).",
+                requestDTO.getFirstName(), requestDTO.getLastName());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RestApiResponse.success(passengerService.createPassenger(requestDTO)));
     }
 
     @Operation(
@@ -75,21 +73,19 @@ public class PassengerController {
     @ApiResponse(
             responseCode = "200",
             description = "Passenger retrieved successfully",
-            content = @Content(
-                    schema = @Schema(implementation = BasePassengerResponseDTO.class)
-            )
+            content = @Content(schema = @Schema(implementation = BasePassengerResponseDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Passenger not found")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Passenger not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
+    )
     @GetMapping("/{id}")
     public ResponseEntity<RestApiResponse<PassengerResponseDTO>> getPassengerById(
-            @Parameter(
-                    description = "The unique ID of the passenger"
-            ) @PathVariable Long id
+            @Parameter(description = "Passenger ID") @PathVariable Long id
     ) {
         log.info("REST: Fetch passenger by id {}", id);
-        return ResponseEntity.ok(
-                RestApiResponse.success(passengerService.getPassengerById(id))
-        );
+        return ResponseEntity.ok(RestApiResponse.success(passengerService.getPassengerById(id)));
     }
 
     @Operation(
@@ -99,22 +95,17 @@ public class PassengerController {
     @ApiResponse(
             responseCode = "200",
             description = "List of all passengers retrieved",
-            content = @Content(
-                    schema = @Schema(
-                            implementation = PaginationPassengerResponseDTO.class
-                    )
-            )
+            content = @Content(schema = @Schema(implementation = PaginationPassengerResponseDTO.class))
     )
     @GetMapping
-    public ResponseEntity<
-            RestApiResponse<PageResponseDTO<PassengerResponseDTO>>
-            > getAllPassengers(
+    public ResponseEntity<RestApiResponse<PageResponseDTO<PassengerResponseDTO>>> getAllPassengers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "ASC") Sort.Direction direction
     ) {
         log.info("REST: Fetching all passengers (page: {}, size: {}).", page, size);
+
         Pageable pageable = PageRequest.of(page, size, direction, sortBy);
         return ResponseEntity.ok(
                 RestApiResponse.success(passengerService.getAllPassengers(pageable))
@@ -128,34 +119,34 @@ public class PassengerController {
     @ApiResponse(
             responseCode = "200",
             description = "Passenger updated successfully",
-            content = @Content(
-                    schema = @Schema(implementation = BasePassengerResponseDTO.class)
-            )
+            content = @Content(schema = @Schema(implementation = BasePassengerResponseDTO.class))
     )
-    @ApiResponse(responseCode = "400", description = "Invalid input data")
-    @ApiResponse(responseCode = "404", description = "Passenger or new Seat not found")
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input data",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Passenger or new Seat not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
+    )
     @ApiResponse(
             responseCode = "409",
-            description = "The requested new seat is already occupied"
+            description = "Requested new seat is already occupied",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
     )
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('passenger:update')")
     public ResponseEntity<RestApiResponse<PassengerResponseDTO>> updatePassenger(
-            @Parameter(
-                    description = "The ID of the passenger to update"
-            ) @PathVariable Long id,
+            @Parameter(description = "Passenger ID") @PathVariable Long id,
             @Valid @RequestBody PassengerRequestDTO requestDTO
     ) {
-        log.info(
-                "REST: Update request for passenger id {} (First Name: {}, Last Name: {}).",
-                id,
-                requestDTO.getFirstName(),
-                requestDTO.getLastName()
-        );
+        log.info("REST: Update passenger id {} ({} {}).",
+                id, requestDTO.getFirstName(), requestDTO.getLastName());
+
         return ResponseEntity.ok(
-                RestApiResponse.success(
-                        passengerService.updatePassengerById(id, requestDTO)
-                )
+                RestApiResponse.success(passengerService.updatePassengerById(id, requestDTO))
         );
     }
 
@@ -165,17 +156,19 @@ public class PassengerController {
     )
     @ApiResponse(
             responseCode = "204",
-            description = "Passenger deleted successfully (No Content)"
+            description = "Passenger deleted successfully"
     )
-    @ApiResponse(responseCode = "404", description = "Passenger not found")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Passenger not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
+    )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('passenger:delete')")
     public ResponseEntity<RestApiResponse<Void>> deletePassenger(
-            @Parameter(
-                    description = "The ID of the passenger to delete"
-            ) @PathVariable Long id
+            @Parameter(description = "Passenger ID") @PathVariable Long id
     ) {
-        log.info("REST: Delete request for passenger id {}", id);
+        log.info("REST: Delete passenger id {}", id);
         passengerService.deletePassenger(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
