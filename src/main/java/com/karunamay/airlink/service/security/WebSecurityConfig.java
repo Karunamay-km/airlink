@@ -88,6 +88,7 @@ public class WebSecurityConfig {
                         auth -> auth
                                 // public endpoints
                                 .requestMatchers(
+                                        "/webhook/handle-stripe-checkout",
                                         "/user/register",
                                         "/user/login",
                                         "/user/logout",
