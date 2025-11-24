@@ -62,12 +62,7 @@ public class Seat {
     private BigDecimal priceModifier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_seat_booking",
-                    foreignKeyDefinition = "FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE SET NULL"
-            )
-    )
+    @JoinColumn(name = "booking_id")
     private Booking booking;
 
     @OneToOne(mappedBy = "seat")

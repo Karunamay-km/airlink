@@ -36,11 +36,7 @@ public class Passenger {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "booking_id",
-            foreignKey = @ForeignKey(
-                    name="fk_passenger_booking",
-                    foreignKeyDefinition = "FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE SET NULL"
-            )
+            name = "booking_id"
     )
     private Booking booking;
 

@@ -17,7 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
     },
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "uk_blacklist_tokens_token",
+            name = "uk_blacklist_token_token",
             columnNames = "token"
         ),
     }
@@ -44,8 +44,7 @@ public class BlackListToken {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "user_id",
-        nullable = false,
-        foreignKey = @ForeignKey(name = "fk_blacklist_token_user")
+        nullable = false
     )
     private User user;
 
