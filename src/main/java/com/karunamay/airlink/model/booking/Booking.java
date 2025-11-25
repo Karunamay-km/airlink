@@ -71,9 +71,6 @@ public class Booking {
     @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    @Column(name = "payment_id")
-    private String paymentId;
-
     @Column(name = "pnr_code", nullable = false, unique = true, length = 10)
     @NotNull(message = "PNR code is required")
     private String pnrCode;

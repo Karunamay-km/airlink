@@ -70,6 +70,10 @@ public class Order {
     @Column(name = "session_id", nullable = false, unique = true, length = 200)
     private String sessionId;
 
+    @NotNull(message = "Payment ID is required")
+    @Column(name = "payment_id", nullable = false, unique = true, length = 200)
+    private String paymentId;
+
     @NotNull(message = "User id is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
