@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @Slf4j
@@ -37,10 +39,16 @@ public class StripePaymentService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final BaseService baseService;
+
     @Value("${app.stripe.secretKey}")
     private String stripeApiKey;
+
     @Value("${app.stripe.successUrl}")
     private String successUrl;
+
+    @Value("${app.stripe.cancelUrl}")
+    private String cancelUrl;
+
     @Value("${app.stripe.webhookSecret}")
     private String webhookSecret;
 
@@ -59,6 +67,7 @@ public class StripePaymentService {
         Long amount = booking.getTotalAmount().multiply(BigDecimal.valueOf(100)).longValueExact();
 
         SessionCreateParams params = SessionCreateParams.builder()
+                .addAllExpand(List.of("customer", "payment_intent"))
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl + "/?session_id={CHECKOUT_SESSION_ID}")
