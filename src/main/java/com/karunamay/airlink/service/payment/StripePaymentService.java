@@ -141,7 +141,17 @@ public class StripePaymentService {
                     SessionRetrieveParams params = SessionRetrieveParams.builder()
                             .addExpand("customer")
                             .addExpand("payment_intent")
+                            .addExpand("payment_intent.latest_charge")
+                            .addExpand("payment_intent.latest_charge.billing_details")
+                            .addExpand("customer")
+                            .addExpand("customer.address")
+                            .addExpand("customer.shipping")
+                            .addExpand("customer.tax")
+                            // If you need payment method details
+                            .addExpand("customer.default_source")
+                            .addExpand("customer.invoice_settings.default_payment_method")
                             .build();
+
 
                     Session session = Session.retrieve(sessionObject.getId(), params, null);
 
