@@ -17,6 +17,7 @@ import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.param.checkout.SessionRetrieveParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,41 +131,51 @@ public class StripePaymentService {
 
         Optional<StripeObject> eventDeserializeObject = event.getDataObjectDeserializer().getObject();
 
-        if (eventDeserializeObject.isPresent()) {
-            StripeObject stripeObject = eventDeserializeObject.get();
+        try {
+            if (eventDeserializeObject.isPresent()) {
+                StripeObject stripeObject = eventDeserializeObject.get();
 
-            if (stripeObject instanceof Session session) {
-                log.info("WEBHOOK: Handling Checkout Session event. Session ID: {}, Event Type: {}", session.getId(), event.getType());
+                if (stripeObject instanceof Session sessionObject) {
+                    log.info("WEBHOOK: Handling Checkout Session event. Session ID: {}, Event Type: {}", sessionObject.getId(), event.getType());
 
-                switch (event.getType()) {
-                    case "checkout.session.completed": {
-                        log.info("WEBHOOK: Matched event type 'checkout.session.completed'. Calling handleSessionCompleted...");
-                        handleSessionCompleted(session);
-                        break;
+                    SessionRetrieveParams params = SessionRetrieveParams.builder()
+                            .addExpand("customer")
+                            .addExpand("payment_intent")
+                            .build();
+
+                    Session session = Session.retrieve(sessionObject.getId(), params, null);
+
+                    switch (event.getType()) {
+                        case "checkout.session.completed": {
+                            log.info("WEBHOOK: Matched event type 'checkout.session.completed'. Calling handleSessionCompleted...");
+                            handleSessionCompleted(session);
+                            break;
+                        }
+                        case "checkout.session.async_payment_succeeded": {
+                            log.info("WEBHOOK: Matched event type 'checkout.session.async_payment_succeeded'. Calling handleAsyncPaymentSucceeded...");
+                            handleAsyncPaymentSucceeded(session);
+                            break;
+                        }
+                        case "checkout.session.async_payment_failed",
+                             "checkout.session.expired": {
+                            log.warn("WEBHOOK: Matched event type '{}'. Calling handleAsyncPaymentFailed...", event.getType());
+                            handleAsyncPaymentFailed(session);
+                            break;
+                        }
+                        default: {
+                            log.info("WEBHOOK: Unhandled event type: {}. Skipping processing.", event.getType());
+                            break;
+                        }
                     }
-                    case "checkout.session.async_payment_succeeded": {
-                        log.info("WEBHOOK: Matched event type 'checkout.session.async_payment_succeeded'. Calling handleAsyncPaymentSucceeded...");
-                        handleAsyncPaymentSucceeded(session);
-                        break;
-                    }
-                    case "checkout.session.async_payment_failed",
-                         "checkout.session.expired": {
-                        log.warn("WEBHOOK: Matched event type '{}'. Calling handleAsyncPaymentFailed...", event.getType());
-                        handleAsyncPaymentFailed(session);
-                        break;
-                    }
-                    default: {
-                        log.info("WEBHOOK: Unhandled event type: {}. Skipping processing.", event.getType());
-                        break;
-                    }
+                } else {
+                    log.warn("WEBHOOK: Deserialized object is not a Session. Skipping processing");
                 }
             } else {
-                log.warn("WEBHOOK: Deserialized object is not a Session. Skipping processing");
+                log.warn("WEBHOOK: Could not deserialize event data object. Skipping processing.");
             }
-        } else {
-            log.warn("WEBHOOK: Could not deserialize event data object. Skipping processing.");
+        } catch (StripeException e) {
+            throw new BusinessException("Payment failed. Please try again");
         }
-
         log.info("WEBHOOK: Finished processing for event ID: {}", event.getId());
         return "";
     }
