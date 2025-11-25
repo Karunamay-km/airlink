@@ -5,6 +5,8 @@ import com.karunamay.airlink.validation.group.OnCreate;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class OrderRequestDTO {
 
@@ -16,7 +18,7 @@ public class OrderRequestDTO {
 
     @NotNull(message = "Total amount is required")
     @Min(value = 1, message = "Total amount must be at least 1")
-    private Long totalAmount;
+    private BigDecimal totalAmount;
 
     @NotNull(message = "Payment status is required")
     private PaymentStatus paymentStatus;

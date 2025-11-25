@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,7 +22,7 @@ public class OrderResponseDTO {
     private Long bookingId;
 
     @NotNull
-    private Long totalAmount;
+    private BigDecimal totalAmount;
 
     @NotNull
     private PaymentStatus paymentStatus;
