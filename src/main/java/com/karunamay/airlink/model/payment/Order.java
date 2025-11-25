@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -83,7 +84,7 @@ public class Order {
 
     @NotNull(message = "Total amount is required")
     @Column(name = "total_amount", nullable = false)
-    private Long totalAmount;
+    private BigDecimal totalAmount;
 
     @NotNull(message = "Payment status is required")
     @Enumerated(EnumType.STRING)

@@ -240,7 +240,7 @@ public class StripePaymentService {
                             .sessionId(session.getId())
                             .user(user)
                             .booking(booking)
-                            .totalAmount(Long.valueOf(session.getMetadata().get("totalAmount")))
+                            .totalAmount(booking.getTotalAmount())
                             .build();
                 });
 
