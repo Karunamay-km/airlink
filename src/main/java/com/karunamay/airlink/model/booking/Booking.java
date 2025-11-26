@@ -15,7 +15,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,7 +83,7 @@ public class Booking {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "booking", orphanRemoval = true)
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToOne(mappedBy = "booking", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "booking")
     private Order order;
 
     @CreationTimestamp
@@ -100,32 +99,6 @@ public class Booking {
                 this.getFlight().getSrcAirport().getCity() +
                 " to " +
                 this.getFlight().getDestAirport().getCity();
-    }
-
-    public String getFlightDescription() {
-        String departure = this.getFlight().getDepartureTime()
-                .format(DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a"));
-        StringBuilder description = new StringBuilder()
-                .append("Flight Booking Details:\n")
-                .append("• Route: ")
-                .append(this.getFlight().getSrcAirport().getCity())
-                .append(" → ")
-                .append(this.getFlight().getDestAirport().getCity())
-                .append("\n• Flight No: ")
-                .append(this.getFlight().getFlightNo())
-                .append("\n• From: ")
-                .append(this.getFlight().getSrcAirport().getCode())
-                .append(" | To: ")
-                .append(this.getFlight().getDestAirport().getCode())
-                .append("\n• Departure: ")
-                .append(departure)
-                .append("\n• Passengers: ")
-                .append(this.getPassengerCount())
-                .append("\n• PNR: ")
-                .append(this.getPnrCode())
-                .append("\n• Booking ID: ")
-                .append(this.getId());
-        return description.toString();
     }
 
     public void addPassenger(Passenger passenger) {

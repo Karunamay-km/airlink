@@ -147,7 +147,6 @@ public class StripePaymentService {
                             .addExpand("customer.address")
                             .addExpand("customer.shipping")
                             .addExpand("customer.tax")
-                            // If you need payment method details
                             .addExpand("customer.default_source")
                             .addExpand("customer.invoice_settings.default_payment_method")
                             .build();
@@ -238,6 +237,7 @@ public class StripePaymentService {
                             .state(address.getState())
                             .pinCode(address.getPostalCode())
                             .sessionId(session.getId())
+                            .paymentId(pi.getId())
                             .user(user)
                             .booking(booking)
                             .totalAmount(booking.getTotalAmount())
@@ -245,6 +245,7 @@ public class StripePaymentService {
                 });
 
         booking.setOrder(order);
+
         log.debug("COMPLETED_HANDLER: Attached order to booking. Stripe payment status: {}", session.getPaymentStatus());
 
         if (session.getPaymentStatus().equals("paid")) {
