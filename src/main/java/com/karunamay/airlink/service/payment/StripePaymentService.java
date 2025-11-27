@@ -72,7 +72,7 @@ public class StripePaymentService {
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl + "/?session_id={CHECKOUT_SESSION_ID}")
-                .setCancelUrl(successUrl + "/?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(cancelUrl + "/?session_id={CHECKOUT_SESSION_ID}")
                 .setBillingAddressCollection(
                         SessionCreateParams.BillingAddressCollection.REQUIRED
                 )
